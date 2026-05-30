@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ISM Industry Dashboard – FY2024</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0d1117;color:#e2e8f0;font-family:'Segoe UI',system-ui,sans-serif;font-size:14px;line-height:1.5}
+::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-track{background:#1a1d2e}::-webkit-scrollbar-thumb{background:#4f8ef7;border-radius:3px}
+h1{font-size:22px;font-weight:700;color:#f8fafc}
+h2{font-size:16px;font-weight:600;color:#cbd5e1;margin-bottom:12px;letter-spacing:.5px;text-transform:uppercase}
+h3{font-size:13px;font-weight:600;color:#94a3b8;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px}
+.page-header{background:linear-gradient(135deg,#1e2d5a 0%,#1a1d2e 100%);padding:20px 28px;border-bottom:1px solid #2d3248;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.page-header .subtitle{color:#94a3b8;font-size:12px;margin-top:4px}
+.badge{background:#1e3a8a;color:#93c5fd;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600}
+.container{max-width:1600px;margin:0 auto;padding:24px 20px}
+.section{margin-bottom:32px}
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;margin-bottom:24px}
+.kpi-card{background:#1a1d2e;border:1px solid #2d3248;border-radius:12px;padding:18px 20px;position:relative;overflow:hidden}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:12px 12px 0 0}
+.kpi-card.blue::before{background:linear-gradient(90deg,#3b82f6,#60a5fa)}
+.kpi-card.green::before{background:linear-gradient(90deg,#10b981,#34d399)}
+.kpi-card.purple::before{background:linear-gradient(90deg,#8b5cf6,#a78bfa)}
+.kpi-card.amber::before{background:linear-gradient(90deg,#f59e0b,#fbbf24)}
+.kpi-card.red::before{background:linear-gradient(90deg,#ef4444,#f87171)}
+.kpi-segment{font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px}
+.kpi-label{font-size:12px;color:#94a3b8;margin-bottom:6px}
+.kpi-value{font-size:22px;font-weight:700;color:#f1f5f9;letter-spacing:-.5px}
+.kpi-change{font-size:11px;margin-top:4px;font-weight:600}
+.kpi-change.pos{color:#22c55e}.kpi-change.neg{color:#ef4444}.kpi-change.neu{color:#94a3b8}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+@media(max-width:900px){.grid-2,.grid-3{grid-template-columns:1fr}}
+.card{background:#1a1d2e;border:1px solid #2d3248;border-radius:12px;padding:20px}
+.chart-wrap{position:relative;width:100%;overflow:hidden}
+canvas{display:block;max-width:100%}
+.legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:#94a3b8}
+.legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.tab-bar{display:flex;gap:4px;margin-bottom:20px;background:#0d1117;border:1px solid #2d3248;border-radius:8px;padding:4px}
+.tab{padding:7px 16px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:500;color:#94a3b8;transition:.2s;border:none;background:transparent}
+.tab.active{background:#1e3a8a;color:#93c5fd}
+.tab:hover:not(.active){background:#1a1d2e;color:#e2e8f0}
+.summary-table{width:100%;border-collapse:collapse}
+.summary-table th{background:#0d1117;color:#64748b;font-size:11px;text-transform:uppercase;letter-spacing:.5px;padding:8px 12px;text-align:right;border-bottom:1px solid #2d3248;font-weight:600}
+.summary-table th:first-child{text-align:left}
+.summary-table td{padding:10px 12px;border-bottom:1px solid #1e2535;font-size:13px;text-align:right;color:#cbd5e1}
+.summary-table td:first-child{text-align:left;color:#f1f5f9;font-weight:500}
+.summary-table tr:last-child td{border-bottom:none;color:#fff;font-weight:600;background:#1e2535}
+.bar-horiz{display:flex;align-items:center;gap:10px;margin:6px 0}
+.bar-horiz-label{width:130px;font-size:12px;color:#94a3b8;flex-shrink:0;text-align:right}
+.bar-horiz-track{flex:1;height:18px;background:#0d1117;border-radius:4px;overflow:hidden;position:relative}
+.bar-horiz-fill{height:100%;border-radius:4px;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;font-size:11px;font-weight:600;color:#fff;transition:width .5s}
+.bar-horiz-val{width:90px;font-size:12px;color:#e2e8f0;text-align:right;flex-shrink:0}
+.chip{display:inline-block;padding:2px 8px;border-radius:8px;font-size:10px;font-weight:700;letter-spacing:.3px}
+.chip-blue{background:#1e3a8a;color:#93c5fd}
+.chip-green{background:#064e3b;color:#34d399}
+.chip-amber{background:#78350f;color:#fbbf24}
+.chip-red{background:#7f1d1d;color:#fca5a5}
+.chip-purple{background:#3b1f6e;color:#c084fc}
+.metric-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid #1e2535}
+.metric-row:last-child{border-bottom:none}
+.metric-name{font-size:13px;color:#94a3b8}
+.metric-val{font-size:14px;font-weight:600;color:#f1f5f9}
+.divider{border:none;border-top:1px solid #2d3248;margin:20px 0}
+.note{font-size:11px;color:#475569;margin-top:12px;font-style:italic}
+.seg-overview{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+@media(max-width:1100px){.seg-overview{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.seg-overview{grid-template-columns:1fr}}
+.seg-card{background:#1a1d2e;border:1px solid #2d3248;border-radius:12px;padding:18px;position:relative;overflow:hidden;cursor:pointer;transition:.2s}
+.seg-card:hover{border-color:#4f8ef7;transform:translateY(-2px)}
+.seg-card .seg-name{font-size:11px;text-transform:uppercase;letter-spacing:.8px;font-weight:700;margin-bottom:10px}
+.seg-card .seg-count{font-size:11px;color:#64748b;margin-bottom:4px}
+.seg-card .seg-primary{font-size:26px;font-weight:800;letter-spacing:-1px;line-height:1}
+.seg-card .seg-unit{font-size:11px;font-weight:400;color:#64748b;margin-left:2px}
+.seg-card .seg-change{font-size:12px;margin-top:4px;font-weight:600}
+.seg-gi{border-top:3px solid #3b82f6}.seg-gt{border-top:3px solid #10b981}
+.seg-li{border-top:3px solid #8b5cf6}.seg-ft{border-top:3px solid #f59e0b}
+</style>
+</head>
+<body>
+<div class="page-header">
+  <div>
+    <h1>ISM Statistical Yearbook — Industry Dashboard</h1>
+    <div class="subtitle">Malaysia Insurance &amp; Takaful Industry · Financial Year 2024 · All figures in RM million unless stated</div>
+  </div>
+  <span class="badge">FY 2024</span>
+</div>
+
+<div class="container">
+
+<!-- Segment Overview Cards -->
+<div class="section">
+  <h2>Segment Overview</h2>
+  <div class="seg-overview">
+    <div class="seg-card seg-gi">
+      <div class="seg-name" style="color:#60a5fa">General Insurance</div>
+      <div class="seg-count">19 Companies</div>
+      <div class="seg-primary">22,502<span class="seg-unit">M</span></div>
+      <div style="font-size:11px;color:#64748b;margin-top:2px">Gross Direct Premiums</div>
+      <div class="seg-change" style="color:#22c55e">▲ 7.1% vs 2023</div>
+      <hr style="border-color:#2d3248;margin:10px 0">
+      <div style="font-size:12px;color:#94a3b8">NCI Ratio: <strong style="color:#fbbf24">57.6%</strong> &nbsp;|&nbsp; Combined: <strong style="color:#22c55e">93.1%</strong></div>
+    </div>
+    <div class="seg-card seg-gt">
+      <div class="seg-name" style="color:#34d399">General Takaful</div>
+      <div class="seg-count">4 Operators</div>
+      <div class="seg-primary">5,901<span class="seg-unit">M</span></div>
+      <div style="font-size:11px;color:#64748b;margin-top:2px">Gross Direct Contributions</div>
+      <div class="seg-change" style="color:#22c55e">▲ 8.4% vs 2023</div>
+      <hr style="border-color:#2d3248;margin:10px 0">
+      <div style="font-size:12px;color:#94a3b8">NCI Ratio: <strong style="color:#f87171">64.0%</strong> &nbsp;|&nbsp; Combined: <strong style="color:#f87171">101.5%</strong></div>
+    </div>
+    <div class="seg-card seg-li">
+      <div class="seg-name" style="color:#c084fc">Life Insurance</div>
+      <div class="seg-count">14 Insurers</div>
+      <div class="seg-primary">15,096<span class="seg-unit">M</span></div>
+      <div style="font-size:11px;color:#64748b;margin-top:2px">New Business Premiums</div>
+      <div class="seg-change" style="color:#22c55e">▲ 13.4% vs 2023</div>
+      <hr style="border-color:#2d3248;margin:10px 0">
+      <div style="font-size:12px;color:#94a3b8">In-Force: <strong style="color:#c084fc">~48.5B</strong> &nbsp;|&nbsp; Total Assets: <strong style="color:#c084fc">325.8B</strong></div>
+    </div>
+    <div class="seg-card seg-ft">
+      <div class="seg-name" style="color:#fbbf24">Family Takaful</div>
+      <div class="seg-count">11 Operators</div>
+      <div class="seg-primary">9,732<span class="seg-unit">M</span></div>
+      <div style="font-size:11px;color:#64748b;margin-top:2px">New Business Contributions</div>
+      <div class="seg-change" style="color:#22c55e">▲ 1.5% vs 2023</div>
+      <hr style="border-color:#2d3248;margin:10px 0">
+      <div style="font-size:12px;color:#94a3b8">In-Force Certs: <strong style="color:#fbbf24">6.69M</strong> &nbsp;|&nbsp; Total Assets: <strong style="color:#fbbf24">~62.3B</strong></div>
+    </div>
+  </div>
+</div>
+
+<!-- Non-Life KPIs -->
+<div class="section">
+  <h2>Non-Life (General Insurance + Takaful) — Key Performance Metrics</h2>
+  <div class="kpi-grid">
+    <div class="kpi-card blue">
+      <div class="kpi-segment">Non-Life Combined</div>
+      <div class="kpi-label">Total Market (GWP + GWC)</div>
+      <div class="kpi-value">RM 28,965M</div>
+      <div class="kpi-change pos">▲ 7.3% from RM 27,025M in 2023</div>
+    </div>
+    <div class="kpi-card green">
+      <div class="kpi-segment">General Insurance</div>
+      <div class="kpi-label">Gross Written Premiums</div>
+      <div class="kpi-value">RM 23,053M</div>
+      <div class="kpi-change pos">▲ 6.9% from RM 21,574M in 2023</div>
+    </div>
+    <div class="kpi-card green">
+      <div class="kpi-segment">General Takaful</div>
+      <div class="kpi-label">Gross Written Contributions</div>
+      <div class="kpi-value">RM 5,912M</div>
+      <div class="kpi-change pos">▲ 8.5% from RM 5,451M in 2023</div>
+    </div>
+    <div class="kpi-card blue">
+      <div class="kpi-segment">General Insurance</div>
+      <div class="kpi-label">Net Earned Premiums</div>
+      <div class="kpi-value">RM 15,590M</div>
+      <div class="kpi-change pos">▲ 6.3% from RM 14,671M</div>
+    </div>
+    <div class="kpi-card blue">
+      <div class="kpi-segment">General Takaful</div>
+      <div class="kpi-label">Net Earned Contributions</div>
+      <div class="kpi-value">RM 4,246M</div>
+      <div class="kpi-change pos">▲ 13.7% from RM 3,806M</div>
+    </div>
+    <div class="kpi-card amber">
+      <div class="kpi-segment">General Insurance</div>
+      <div class="kpi-label">NCI Ratio (Industry)</div>
+      <div class="kpi-value">57.6%</div>
+      <div class="kpi-change neg">▲ +0.9pp from 56.7% in 2023</div>
+    </div>
+    <div class="kpi-card amber">
+      <div class="kpi-segment">General Takaful</div>
+      <div class="kpi-label">NCI Ratio (Industry)</div>
+      <div class="kpi-value">64.0%</div>
+      <div class="kpi-change neg">▲ +0.8pp from 63.2% in 2023</div>
+    </div>
+    <div class="kpi-card green">
+      <div class="kpi-segment">General Insurance</div>
+      <div class="kpi-label">Underwriting Profit</div>
+      <div class="kpi-value">RM 1,077M</div>
+      <div class="kpi-change neg">▼ -7.3% from RM 1,163M in 2023</div>
+    </div>
+    <div class="kpi-card amber">
+      <div class="kpi-segment">General Takaful</div>
+      <div class="kpi-label">Underwriting Result</div>
+      <div class="kpi-value">–RM 65M</div>
+      <div class="kpi-change pos">▲ Improved from –RM 189M in 2023</div>
+    </div>
+    <div class="kpi-card green">
+      <div class="kpi-segment">General Insurance</div>
+      <div class="kpi-label">Operating Profit</div>
+      <div class="kpi-value">RM 2,615M</div>
+      <div class="kpi-change pos">▲ +11.6% from RM 2,334M in 2023</div>
+    </div>
+    <div class="kpi-card green">
+      <div class="kpi-segment">General Takaful</div>
+      <div class="kpi-label">Operating Profit</div>
+      <div class="kpi-value">RM 181M</div>
+      <div class="kpi-change pos">▲ +225% from RM 56M in 2023</div>
+    </div>
+    <div class="kpi-card blue">
+      <div class="kpi-segment">Non-Life Market Share</div>
+      <div class="kpi-label">Takaful Share of Market</div>
+      <div class="kpi-value">20.8%</div>
+      <div class="kpi-change neu">≈ Stable from 20.6% in 2023</div>
+    </div>
+  </div>
+</div>
+
+<!-- Charts Row -->
+<div class="section grid-2">
+  <!-- Trend Chart: GWP + GWC -->
+  <div class="card">
+    <h2>Gross Premiums / Contributions Trend (RM Million)</h2>
+    <div class="chart-wrap"><canvas id="gwpChart" height="280"></canvas></div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div>General Insurance (GWP)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#10b981"></div>General Takaful (GWC)</div>
+    </div>
+  </div>
+
+  <!-- NCI Trend -->
+  <div class="card">
+    <h2>Net Claims Incurred Ratio Trend (%)</h2>
+    <div class="chart-wrap"><canvas id="nciChart" height="280"></canvas></div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div>General Insurance NCI%</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#10b981"></div>General Takaful NCI%</div>
+    </div>
+  </div>
+</div>
+
+<!-- LOB Breakdown -->
+<div class="section">
+  <h2>Non-Life Lines of Business — 2024 Gross Premiums / Contributions (RM Million)</h2>
+  <div class="grid-2">
+    <div class="card">
+      <h3>General Insurance (Total: 23,053M)</h3>
+      <div id="gi-lob"></div>
+      <p class="note">Source: ISM Statistical Yearbook FY2024. GWP by line of business.</p>
+    </div>
+    <div class="card">
+      <h3>General Takaful (Total: 5,912M)</h3>
+      <div id="gt-lob"></div>
+      <p class="note">Source: ISM Statistical Yearbook FY2024. GWC by line of business.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Combined LOB chart -->
+<div class="section">
+  <div class="card">
+    <h2>Combined Non-Life Market by Line of Business (RM Million) — Insurance vs Takaful</h2>
+    <div class="chart-wrap"><canvas id="lobChart" height="320"></canvas></div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div>General Insurance</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#10b981"></div>General Takaful</div>
+    </div>
+    <p class="note">GI: Gross Written Premiums 2024 by major line. GT: Gross Written Contributions 2024 by major line. Miscellaneous includes Bonds, CAR, Liabilities, WC/EL, Others.</p>
+  </div>
+</div>
+
+<!-- GI Historical by LOB -->
+<div class="section">
+  <div class="card">
+    <h2>General Insurance — GWP by Line of Business (RM Million) 2020–2024</h2>
+    <div class="chart-wrap"><canvas id="giLobTrendChart" height="320"></canvas></div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div>Motor</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#10b981"></div>Fire</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#8b5cf6"></div>MAT</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div>Medical &amp; Health</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#ef4444"></div>Personal Accident</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#94a3b8"></div>Miscellaneous</div>
+    </div>
+  </div>
+</div>
+
+<!-- Life & Family Takaful KPIs -->
+<div class="section">
+  <h2>Life Insurance &amp; Family Takaful — Key Performance Metrics</h2>
+  <div class="kpi-grid">
+    <div class="kpi-card purple">
+      <div class="kpi-segment">Life Insurance</div>
+      <div class="kpi-label">New Business Premiums (Total)</div>
+      <div class="kpi-value">RM 15,096M</div>
+      <div class="kpi-change pos">▲ 13.4% from 2023</div>
+    </div>
+    <div class="kpi-card purple">
+      <div class="kpi-segment">Life Insurance</div>
+      <div class="kpi-label">Individual Ordinary Life</div>
+      <div class="kpi-value">RM 1,866M</div>
+      <div class="kpi-change neg">▼ -10.8% from RM 2,092M</div>
+    </div>
+    <div class="kpi-card purple">
+      <div class="kpi-segment">Life Insurance</div>
+      <div class="kpi-label">Group Ordinary Life</div>
+      <div class="kpi-value">RM 5,619M</div>
+      <div class="kpi-change pos">▲ +11.1% from RM 5,060M</div>
+    </div>
+    <div class="kpi-card purple">
+      <div class="kpi-segment">Life Insurance</div>
+      <div class="kpi-label">Investment-Linked Plans</div>
+      <div class="kpi-value">RM 7,611M</div>
+      <div class="kpi-change pos">▲ +23.6% from RM 6,156M</div>
+    </div>
+    <div class="kpi-card amber">
+      <div class="kpi-segment">Family Takaful</div>
+      <div class="kpi-label">New Business Contributions</div>
+      <div class="kpi-value">RM 9,732M</div>
+      <div class="kpi-change pos">▲ +1.5% from RM 9,590M</div>
+    </div>
+    <div class="kpi-card amber">
+      <div class="kpi-segment">Family Takaful</div>
+      <div class="kpi-label">Individual Ordinary Family</div>
+      <div class="kpi-value">RM 3,591M</div>
+      <div class="kpi-change pos">▲ +7.8% from RM 3,332M</div>
+    </div>
+    <div class="kpi-card amber">
+      <div class="kpi-segment">Family Takaful</div>
+      <div class="kpi-label">Group Ordinary Family</div>
+      <div class="kpi-value">RM 5,163M</div>
+      <div class="kpi-change neg">▼ -7.4% from RM 5,575M</div>
+    </div>
+    <div class="kpi-card amber">
+      <div class="kpi-segment">Family Takaful</div>
+      <div class="kpi-label">Investment-Linked Plans</div>
+      <div class="kpi-value">RM 999M</div>
+      <div class="kpi-change pos">▲ +22.7% from RM 814M</div>
+    </div>
+    <div class="kpi-card purple">
+      <div class="kpi-segment">Life Insurance</div>
+      <div class="kpi-label">Total In-Force Policies (Individual)</div>
+      <div class="kpi-value">12.953M</div>
+      <div class="kpi-change neg">▼ New policies 1.196M; terminations 1.222M</div>
+    </div>
+    <div class="kpi-card amber">
+      <div class="kpi-segment">Family Takaful</div>
+      <div class="kpi-label">Certificates In-Force</div>
+      <div class="kpi-value">6.686M</div>
+      <div class="kpi-change pos">▲ New certs: 0.984M in 2024</div>
+    </div>
+    <div class="kpi-card purple">
+      <div class="kpi-segment">Life Insurance</div>
+      <div class="kpi-label">Total Assets (14 Insurers)</div>
+      <div class="kpi-value">RM 325.8B</div>
+      <div class="kpi-change pos">▲ from RM 298.6B in 2023 (+9.1%)</div>
+    </div>
+    <div class="kpi-card amber">
+      <div class="kpi-segment">Family Takaful</div>
+      <div class="kpi-label">Net Cert Benefits Paid (Death+Mat+Sur)</div>
+      <div class="kpi-value">RM 9,502M</div>
+      <div class="kpi-change neg">Surrender: 2,543M | Death: 868M | Maturity: 325M</div>
+    </div>
+  </div>
+</div>
+
+<!-- Life New Business chart -->
+<div class="section grid-2">
+  <div class="card">
+    <h2>Life Insurance New Business Premiums 2019–2024 (RM M)</h2>
+    <div class="chart-wrap"><canvas id="lifeChart" height="280"></canvas></div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#8b5cf6"></div>Single Premiums</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#a78bfa"></div>Annual Premiums</div>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Family Takaful New Business Contributions 2019–2024 (RM M)</h2>
+    <div class="chart-wrap"><canvas id="ftChart" height="280"></canvas></div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div>Single Contributions</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#fbbf24"></div>Annual Contributions</div>
+    </div>
+  </div>
+</div>
+
+<!-- Industry Summary Table -->
+<div class="section">
+  <div class="card">
+    <h2>Industry Financial Summary — All Segments 2021–2024 (RM Million)</h2>
+    <div style="overflow-x:auto">
+    <table class="summary-table">
+      <thead>
+        <tr>
+          <th style="text-align:left">Segment / Metric</th>
+          <th>2021</th><th>2022</th><th>2023</th><th>2024</th><th>CAGR</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td colspan="6" style="background:#0d1117;color:#3b82f6;font-size:11px;text-transform:uppercase;letter-spacing:.5px;padding:10px 12px 4px">General Insurance</td></tr>
+        <tr><td>Gross Written Premiums</td><td>18,131</td><td>19,891</td><td>21,574</td><td>23,053</td><td><span class="chip chip-green">+8.3%</span></td></tr>
+        <tr><td>Net Earned Premiums</td><td>13,080</td><td>13,964</td><td>14,671</td><td>15,590</td><td><span class="chip chip-green">+6.0%</span></td></tr>
+        <tr><td>Net Claims Incurred</td><td>6,541</td><td>7,502</td><td>8,311</td><td>8,953</td><td><span class="chip chip-amber">+11.1%</span></td></tr>
+        <tr><td>NCI Ratio</td><td>50.0%</td><td>53.7%</td><td>56.7%</td><td>57.6%</td><td><span class="chip chip-red">+4.8pp</span></td></tr>
+        <tr><td>Underwriting Profit</td><td>2,016</td><td>1,567</td><td>1,164</td><td>1,077</td><td><span class="chip chip-red">–19.5%</span></td></tr>
+        <tr><td>Operating Profit</td><td>3,157</td><td>2,582</td><td>2,334</td><td>2,615</td><td><span class="chip chip-red">–6.0%</span></td></tr>
+        <tr><td colspan="6" style="background:#0d1117;color:#10b981;font-size:11px;text-transform:uppercase;letter-spacing:.5px;padding:10px 12px 4px">General Takaful</td></tr>
+        <tr><td>Gross Written Contributions</td><td>3,833</td><td>4,642</td><td>5,451</td><td>5,912</td><td><span class="chip chip-green">+15.5%</span></td></tr>
+        <tr><td>Net Earned Contributions</td><td>2,821</td><td>3,346</td><td>3,806</td><td>4,278</td><td><span class="chip chip-green">+14.9%</span></td></tr>
+        <tr><td>Net Claims Incurred</td><td>1,447</td><td>2,031</td><td>2,407</td><td>2,737</td><td><span class="chip chip-red">+23.7%</span></td></tr>
+        <tr><td>NCI Ratio</td><td>51.3%</td><td>60.7%</td><td>63.2%</td><td>64.0%</td><td><span class="chip chip-red">+8.5pp</span></td></tr>
+        <tr><td>Underwriting Profit / (Loss)</td><td>257</td><td>(80)</td><td>(189)</td><td>(65)</td><td><span class="chip chip-red">Deteriorated</span></td></tr>
+        <tr><td>Operating Profit</td><td>424</td><td>101</td><td>56</td><td>181</td><td><span class="chip chip-red">–25.4%</span></td></tr>
+        <tr><td colspan="6" style="background:#0d1117;color:#8b5cf6;font-size:11px;text-transform:uppercase;letter-spacing:.5px;padding:10px 12px 4px">Life Insurance (New Business)</td></tr>
+        <tr><td>Single Premiums</td><td>5,150</td><td>6,238</td><td>6,257</td><td>7,561</td><td><span class="chip chip-green">+13.7%</span></td></tr>
+        <tr><td>Annual Premiums</td><td>5,538</td><td>5,740</td><td>7,071</td><td>7,536</td><td><span class="chip chip-green">+10.8%</span></td></tr>
+        <tr><td>Total New Business</td><td>10,688</td><td>11,978</td><td>13,328</td><td>15,097</td><td><span class="chip chip-green">+12.2%</span></td></tr>
+        <tr><td colspan="6" style="background:#0d1117;color:#f59e0b;font-size:11px;text-transform:uppercase;letter-spacing:.5px;padding:10px 12px 4px">Family Takaful (New Business)</td></tr>
+        <tr><td>Single Contributions</td><td>1,498</td><td>2,263</td><td>2,158</td><td>2,185</td><td><span class="chip chip-green">+13.4%</span></td></tr>
+        <tr><td>Annual Contributions</td><td>5,092</td><td>7,469</td><td>7,432</td><td>7,547</td><td><span class="chip chip-green">+13.9%</span></td></tr>
+        <tr><td>Total New Business</td><td>6,590</td><td>9,732</td><td>9,590</td><td>9,732</td><td><span class="chip chip-green">+13.9%</span></td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="note">CAGR calculated over 2021–2024 (3 years). pp = percentage points. Source: ISM Statistical Yearbook Financial Year 2024.</p>
+  </div>
+</div>
+
+<!-- Underwriting Ratios Summary -->
+<div class="section">
+  <div class="card">
+    <h2>Non-Life Underwriting Ratios — General Insurance Industry</h2>
+    <div class="grid-3" style="gap:8px;margin-top:8px">
+      <div>
+        <h3>Loss Ratio by Line (2024 vs 2023)</h3>
+        <div id="lob-loss-ratios"></div>
+      </div>
+      <div>
+        <h3>GI Combined Ratio History</h3>
+        <div id="combined-ratio-history"></div>
+      </div>
+      <div>
+        <h3>Key Ratios — 2024</h3>
+        <div class="metric-row"><span class="metric-name">Net Claims Incurred Ratio</span><span class="metric-val" style="color:#fbbf24">57.6%</span></div>
+        <div class="metric-row"><span class="metric-name">Net Commissions Ratio</span><span class="metric-val">10.4%</span></div>
+        <div class="metric-row"><span class="metric-name">Management Expenses Ratio</span><span class="metric-val">25.3%</span></div>
+        <div class="metric-row"><span class="metric-name">Combined Ratio</span><span class="metric-val" style="color:#22c55e">93.1%</span></div>
+        <div class="metric-row"><span class="metric-name">Operating Ratio</span><span class="metric-val" style="color:#22c55e">83.2%</span></div>
+        <div class="metric-row"><span class="metric-name">Retention Ratio</span><span class="metric-val">69.6%</span></div>
+        <div class="metric-row"><span class="metric-name">Risk Retention (Motor)</span><span class="metric-val" style="color:#22c55e">92.6%</span></div>
+        <div class="metric-row"><span class="metric-name">Risk Retention (Fire)</span><span class="metric-val" style="color:#ef4444">46.6%</span></div>
+        <div class="metric-row"><span class="metric-name">Reinsurance Ceded (Total)</span><span class="metric-val">RM 7,004M</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="text-align:center;padding:20px 0;color:#475569;font-size:11px">
+  ISM Statistical Yearbook Financial Year 2024 &nbsp;|&nbsp; Published June 2025 &nbsp;|&nbsp; ISM Insurance Services Malaysia Berhad
+</div>
+
+</div><!-- /container -->
+
+<script>
+// === MINIMAL CHART ENGINE ===
+function getCtx(id){const c=document.getElementById(id);c.width=c.parentElement.offsetWidth||600;return c.getContext('2d')}
+
+const COLORS={blue:'#3b82f6',green:'#10b981',purple:'#8b5cf6',amber:'#f59e0b',red:'#ef4444',teal:'#06b6d4',pink:'#ec4899',lime:'#84cc16',slate:'#64748b',indigo:'#6366f1'};
+
+function drawGroupedBar(id,labels,datasets,opts={}){
+  const canvas=document.getElementById(id);
+  canvas.width=canvas.parentElement.offsetWidth||600;
+  const h=opts.height||280;canvas.height=h;
+  const ctx=canvas.getContext('2d');
+  const pad={t:30,r:20,b:60,l:opts.lpad||70};
+  const W=canvas.width,H=h;
+  const innerW=W-pad.l-pad.r,innerH=H-pad.t-pad.b;
+  ctx.clearRect(0,0,W,H);
+
+  const nGroups=labels.length,nSeries=datasets.length;
+  const groupW=innerW/nGroups,barW=Math.min(groupW/nSeries*0.8,40),gapIntra=2;
+  const allVals=datasets.flatMap(d=>d.data);
+  const minV=Math.min(0,...allVals),maxV=Math.max(...allVals);
+  const range=maxV-minV||1;
+  const scale=innerH/range;
+
+  function toY(v){return pad.t+innerH-(v-minV)*scale}
+
+  // grid
+  ctx.strokeStyle='#1e2535';ctx.lineWidth=1;
+  const nLines=5;
+  for(let i=0;i<=nLines;i++){
+    const v=minV+(range/nLines)*i;
+    const y=toY(v);
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(W-pad.r,y);ctx.stroke();
+    ctx.fillStyle='#475569';ctx.font='10px system-ui';ctx.textAlign='right';
+    ctx.fillText(opts.yFmt?opts.yFmt(v):Math.round(v).toLocaleString(),pad.l-4,y+4);
+  }
+
+  datasets.forEach((ds,si)=>{
+    ctx.fillStyle=ds.color;
+    ds.data.forEach((v,gi)=>{
+      const x=pad.l+gi*groupW+(si*(barW+gapIntra))+(groupW-(nSeries*(barW+gapIntra)))/2;
+      const y0=toY(0),y1=toY(v);
+      const bh=Math.abs(y0-y1);
+      const by=v>=0?y1:y0;
+      ctx.fillRect(x,by,barW,bh);
+    });
+  });
+
+  // x labels
+  ctx.fillStyle='#94a3b8';ctx.font='11px system-ui';ctx.textAlign='center';
+  labels.forEach((l,i)=>{
+    ctx.fillText(l,pad.l+i*groupW+groupW/2,H-pad.b+16);
+  });
+
+  if(opts.title){ctx.fillStyle='#e2e8f0';ctx.font='bold 12px system-ui';ctx.textAlign='center';ctx.fillText(opts.title,W/2,14);}
+}
+
+function drawLineChart(id,labels,datasets,opts={}){
+  const canvas=document.getElementById(id);
+  canvas.width=canvas.parentElement.offsetWidth||600;
+  const h=opts.height||280;canvas.height=h;
+  const ctx=canvas.getContext('2d');
+  const pad={t:20,r:20,b:50,l:opts.lpad||60};
+  const W=canvas.width,H=h;
+  const innerW=W-pad.l-pad.r,innerH=H-pad.t-pad.b;
+  ctx.clearRect(0,0,W,H);
+
+  const allVals=datasets.flatMap(d=>d.data);
+  const minV=Math.min(...allVals)*0.95,maxV=Math.max(...allVals)*1.05;
+  const range=maxV-minV||1;
+
+  function toX(i){return pad.l+i*(innerW/(labels.length-1))}
+  function toY(v){return pad.t+innerH-(v-minV)/(range)*innerH}
+
+  // grid
+  ctx.strokeStyle='#1e2535';ctx.lineWidth=1;
+  const nLines=5;
+  for(let i=0;i<=nLines;i++){
+    const v=minV+(range/nLines)*i;
+    const y=toY(v);
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(W-pad.r,y);ctx.stroke();
+    ctx.fillStyle='#475569';ctx.font='10px system-ui';ctx.textAlign='right';
+    ctx.fillText(opts.yFmt?opts.yFmt(v):Math.round(v).toLocaleString(),pad.l-4,y+4);
+  }
+
+  // x labels
+  ctx.fillStyle='#94a3b8';ctx.font='11px system-ui';ctx.textAlign='center';
+  labels.forEach((l,i)=>ctx.fillText(l,toX(i),H-pad.b+16));
+
+  datasets.forEach(ds=>{
+    ctx.strokeStyle=ds.color;ctx.lineWidth=2.5;ctx.beginPath();
+    ds.data.forEach((v,i)=>{i===0?ctx.moveTo(toX(i),toY(v)):ctx.lineTo(toX(i),toY(v))});
+    ctx.stroke();
+    // dots
+    ctx.fillStyle=ds.color;
+    ds.data.forEach((v,i)=>{
+      ctx.beginPath();ctx.arc(toX(i),toY(v),4,0,Math.PI*2);ctx.fill();
+    });
+  });
+}
+
+function drawStackedBar(id,labels,datasets,opts={}){
+  const canvas=document.getElementById(id);
+  canvas.width=canvas.parentElement.offsetWidth||600;
+  const h=opts.height||300;canvas.height=h;
+  const ctx=canvas.getContext('2d');
+  const pad={t:20,r:20,b:60,l:opts.lpad||70};
+  const W=canvas.width,H=h;
+  const innerW=W-pad.l-pad.r,innerH=H-pad.t-pad.b;
+  ctx.clearRect(0,0,W,H);
+
+  const totals=labels.map((_,i)=>datasets.reduce((s,d)=>s+d.data[i],0));
+  const maxV=Math.max(...totals)*1.05;
+  const scale=innerH/maxV;
+  const barW=Math.min(innerW/labels.length*0.6,60);
+
+  function toY(v){return pad.t+innerH-v*scale}
+
+  // grid
+  ctx.strokeStyle='#1e2535';ctx.lineWidth=1;
+  for(let i=0;i<=5;i++){
+    const v=maxV/5*i;const y=toY(v);
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(W-pad.r,y);ctx.stroke();
+    ctx.fillStyle='#475569';ctx.font='10px system-ui';ctx.textAlign='right';
+    const lab=v>=1000?(v/1000).toFixed(1)+'k':Math.round(v).toString();
+    ctx.fillText(lab,pad.l-4,y+4);
+  }
+
+  labels.forEach((label,gi)=>{
+    let accum=0;
+    const x=pad.l+gi*(innerW/labels.length)+(innerW/labels.length-barW)/2;
+    datasets.forEach(ds=>{
+      const v=ds.data[gi];
+      ctx.fillStyle=ds.color;
+      ctx.fillRect(x,toY(accum+v),barW,v*scale);
+      accum+=v;
+    });
+    ctx.fillStyle='#94a3b8';ctx.font='11px system-ui';ctx.textAlign='center';
+    ctx.fillText(label,x+barW/2,H-pad.b+16);
+    if(opts.showTotal){
+      ctx.fillStyle='#cbd5e1';ctx.font='bold 10px system-ui';ctx.textAlign='center';
+      const lab=totals[gi]>=1000?(totals[gi]/1000).toFixed(1)+'k':Math.round(totals[gi]).toString();
+      ctx.fillText(lab,x+barW/2,toY(totals[gi])-4);
+    }
+  });
+}
+
+// === DATA ===
+const years=['2021','2022','2023','2024'];
+const gwpData=[18131,19891,21574,23053];
+const gwcData=[3833,4642,5451,5912];
+const nciGI=[50.0,53.7,56.7,57.6];
+const nciGT=[51.3,60.7,63.2,64.0];
+
+// LOB data (RM M, 2024)
+const giLob={Motor:10409,Fire:4723,MAT:1826,MHI:1187,PA:1391,Misc:3517};
+const gtLob={Motor:4066,Fire:1005,MAT:72,MHI:46,PA:388,Misc:335};
+
+// Life and FT new business
+const lifeYears=['2019','2020','2021','2022','2023','2024'];
+const lifeSingle=[6128,5572,5150,6238,6257,7561];
+const lifeAnnual=[5740,5104,5538,5740,7071,7536];
+const ftSingle=[2228,1306,1498,2263,2158,2185];
+const ftAnnual=[4852,5092,6271,7469,7432,7547];
+
+// GI historical LOB (RM M, 2020-2024)
+const lobYears=['2020','2021','2022','2023','2024'];
+const lobMotor=[8412,8238,8990,9758,10409];
+const lobFire=[3611,3804,4054,4465,4723];
+const lobMAT=[1375,1418,1511,1598,1826];
+const lobMHI=[1001,968,976,1078,1187];
+const lobPA=[994,1011,1446,1212,1391];
+const lobMisc=[2266,2691,2914,3463,3517];
+
+window.addEventListener('load',()=>{
+  // GWP trend
+  drawGroupedBar('gwpChart',years,[
+    {data:gwpData,color:COLORS.blue},
+    {data:gwcData,color:COLORS.green}
+  ],{lpad:70,yFmt:v=>v>=1000?(v/1000).toFixed(0)+'k':Math.round(v)});
+
+  // NCI trend
+  drawLineChart('nciChart',years,[
+    {data:nciGI,color:COLORS.blue},
+    {data:nciGT,color:COLORS.green}
+  ],{lpad:50,yFmt:v=>v.toFixed(1)+'%'});
+
+  // LOB horizontal bars
+  renderLOBBars('gi-lob',giLob,COLORS.blue,23053);
+  renderLOBBars('gt-lob',gtLob,COLORS.green,5912);
+
+  // Combined LOB grouped bar
+  const lobKeys=['Motor','Fire','MAT','MHI','PA','Misc'];
+  drawGroupedBar('lobChart',lobKeys,[
+    {data:lobKeys.map(k=>giLob[k]),color:COLORS.blue},
+    {data:lobKeys.map(k=>gtLob[k]),color:COLORS.green}
+  ],{lpad:70,yFmt:v=>v>=1000?(v/1000).toFixed(1)+'k':Math.round(v)});
+
+  // GI LOB stacked trend
+  drawStackedBar('giLobTrendChart',lobYears,[
+    {data:lobMotor,color:COLORS.blue},
+    {data:lobFire,color:COLORS.green},
+    {data:lobMAT,color:COLORS.purple},
+    {data:lobMHI,color:COLORS.amber},
+    {data:lobPA,color:COLORS.red},
+    {data:lobMisc,color:COLORS.slate}
+  ],{lpad:70,showTotal:true,yFmt:v=>v>=1000?(v/1000).toFixed(0)+'k':Math.round(v)});
+
+  // Life chart
+  drawStackedBar('lifeChart',lifeYears,[
+    {data:lifeSingle,color:COLORS.purple},
+    {data:lifeAnnual,color:'#a78bfa'}
+  ],{lpad:70,showTotal:true});
+
+  // FT chart
+  drawStackedBar('ftChart',lifeYears,[
+    {data:ftSingle,color:COLORS.amber},
+    {data:ftAnnual,color:COLORS.lime}
+  ],{lpad:70,showTotal:true});
+
+  // LOB loss ratios
+  renderLossRatioBars();
+  renderCombinedRatioHistory();
+});
+
+function renderLOBBars(elId,data,color,total){
+  const el=document.getElementById(elId);
+  const sorted=Object.entries(data).sort((a,b)=>b[1]-a[1]);
+  el.innerHTML=sorted.map(([k,v])=>{
+    const pct=(v/total*100).toFixed(1);
+    return `<div class="bar-horiz">
+      <div class="bar-horiz-label">${k}</div>
+      <div class="bar-horiz-track">
+        <div class="bar-horiz-fill" style="width:${pct}%;background:${color}">${pct}%</div>
+      </div>
+      <div class="bar-horiz-val">${v.toLocaleString()}M</div>
+    </div>`;
+  }).join('');
+}
+
+function renderLossRatioBars(){
+  const lobs=[
+    {n:'Total Motor',v24:68.6,v23:66.7},
+    {n:'Medical & Health',v24:68.3,v23:65.9},
+    {n:'Liabilities',v24:42.4,v23:36.4},
+    {n:'Others',v24:37.4,v23:51.0},
+    {n:'Fire',v24:34.1,v23:35.4},
+    {n:'MAT',v24:36.6,v23:26.6},
+    {n:'Personal Accident',v24:34.7,v23:28.8},
+    {n:'CAR & Engineering',v24:45.0,v23:79.5},
+    {n:'Bonds',v24:4.7,v23:12.7},
+    {n:'WC / EL',v24:-3.3,v23:4.0},
+  ];
+  const el=document.getElementById('lob-loss-ratios');
+  el.innerHTML=lobs.map(l=>{
+    const chg=l.v24-l.v23;
+    const chgCol=chg>0?'#ef4444':chg<0?'#22c55e':'#94a3b8';
+    const chgStr=(chg>0?'+':'')+chg.toFixed(1)+'pp';
+    const pct=Math.max(0,l.v24);
+    return `<div style="margin:5px 0">
+      <div style="display:flex;justify-content:space-between;margin-bottom:2px">
+        <span style="font-size:11px;color:#94a3b8">${l.n}</span>
+        <span style="font-size:11px"><strong style="color:#e2e8f0">${l.v24}%</strong> <span style="color:${chgCol}">${chgStr}</span></span>
+      </div>
+      <div style="height:6px;background:#0d1117;border-radius:3px;overflow:hidden">
+        <div style="width:${Math.min(100,pct)}%;height:100%;background:${pct>60?'#ef4444':pct>45?'#f59e0b':'#22c55e'};border-radius:3px"></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderCombinedRatioHistory(){
+  const hist=[
+    {y:'2019',combined:93.0,loss:58.2,exp:34.7},
+    {y:'2020',combined:87.4,loss:52.8,exp:34.6},
+    {y:'2021',combined:84.7,loss:50.0,exp:34.7},
+    {y:'2022',combined:88.8,loss:53.7,exp:35.1},
+    {y:'2023',combined:92.1,loss:56.7,exp:35.4},
+    {y:'2024',combined:93.1,loss:57.6,exp:35.7},
+  ];
+  const el=document.getElementById('combined-ratio-history');
+  el.innerHTML=hist.map(r=>{
+    const col=r.combined<90?'#22c55e':r.combined<100?'#fbbf24':'#ef4444';
+    return `<div style="display:flex;align-items:center;gap:8px;margin:5px 0">
+      <span style="font-size:11px;color:#64748b;width:30px">${r.y}</span>
+      <div style="flex:1;height:16px;background:#0d1117;border-radius:3px;overflow:hidden;position:relative">
+        <div style="width:${r.loss}%;height:100%;background:#3b82f6;opacity:.8"></div>
+        <div style="width:${r.exp}%;height:100%;background:#8b5cf6;opacity:.8;margin-top:-16px;margin-left:${r.loss}%"></div>
+      </div>
+      <span style="font-size:12px;font-weight:600;color:${col};width:42px;text-align:right">${r.combined}%</span>
+    </div>`;
+  }).join('');
+  el.innerHTML+=`<div style="margin-top:8px;display:flex;gap:10px">
+    <span style="font-size:10px;color:#3b82f6">■ Loss Ratio</span>
+    <span style="font-size:10px;color:#8b5cf6">■ Expense Ratio</span>
+  </div>`;
+}
+
+window.addEventListener('resize',()=>{
+  setTimeout(()=>{
+    drawGroupedBar('gwpChart',years,[{data:gwpData,color:COLORS.blue},{data:gwcData,color:COLORS.green}],{lpad:70,yFmt:v=>v>=1000?(v/1000).toFixed(0)+'k':Math.round(v)});
+    drawLineChart('nciChart',years,[{data:nciGI,color:COLORS.blue},{data:nciGT,color:COLORS.green}],{lpad:50,yFmt:v=>v.toFixed(1)+'%'});
+    const lobKeys=['Motor','Fire','MAT','MHI','PA','Misc'];
+    drawGroupedBar('lobChart',lobKeys,[{data:lobKeys.map(k=>giLob[k]),color:COLORS.blue},{data:lobKeys.map(k=>gtLob[k]),color:COLORS.green}],{lpad:70,yFmt:v=>v>=1000?(v/1000).toFixed(1)+'k':Math.round(v)});
+    drawStackedBar('giLobTrendChart',lobYears,[{data:lobMotor,color:COLORS.blue},{data:lobFire,color:COLORS.green},{data:lobMAT,color:COLORS.purple},{data:lobMHI,color:COLORS.amber},{data:lobPA,color:COLORS.red},{data:lobMisc,color:COLORS.slate}],{lpad:70,showTotal:true});
+    drawStackedBar('lifeChart',lifeYears,[{data:lifeSingle,color:COLORS.purple},{data:lifeAnnual,color:'#a78bfa'}],{lpad:70,showTotal:true});
+    drawStackedBar('ftChart',lifeYears,[{data:ftSingle,color:COLORS.amber},{data:ftAnnual,color:COLORS.lime}],{lpad:70,showTotal:true});
+  },100);
+});
+</script>
+</body>
+</html>

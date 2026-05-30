@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ISM Company Scorecard – FY2024</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0d1117;color:#e2e8f0;font-family:'Segoe UI',system-ui,sans-serif;font-size:14px;line-height:1.5}
+::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-track{background:#1a1d2e}::-webkit-scrollbar-thumb{background:#4f8ef7;border-radius:3px}
+.page-header{background:linear-gradient(135deg,#1e2d5a 0%,#1a1d2e 100%);padding:20px 28px;border-bottom:1px solid #2d3248;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+h1{font-size:22px;font-weight:700;color:#f8fafc}
+.subtitle{color:#94a3b8;font-size:12px;margin-top:4px}
+.badge{background:#1e3a8a;color:#93c5fd;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600}
+.container{max-width:1800px;margin:0 auto;padding:20px}
+.controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:16px;background:#1a1d2e;border:1px solid #2d3248;border-radius:10px;padding:14px}
+.controls label{font-size:12px;color:#94a3b8;font-weight:500}
+.controls input,.controls select{background:#0d1117;border:1px solid #2d3248;border-radius:6px;padding:6px 10px;color:#e2e8f0;font-size:13px;outline:none}
+.controls input:focus,.controls select:focus{border-color:#4f8ef7}
+.seg-filter{display:flex;gap:6px;flex-wrap:wrap}
+.seg-btn{padding:5px 14px;border-radius:20px;border:1px solid #2d3248;background:transparent;color:#94a3b8;font-size:12px;font-weight:600;cursor:pointer;transition:.2s}
+.seg-btn:hover{border-color:#4f8ef7;color:#93c5fd}
+.seg-btn.active{color:#fff;border-color:transparent}
+.seg-btn.all.active{background:#3b3f5c}
+.seg-btn.gi.active{background:#1e3a8a;color:#93c5fd}
+.seg-btn.gt.active{background:#064e3b;color:#34d399}
+.seg-btn.li.active{background:#3b1f6e;color:#c084fc}
+.seg-btn.ft.active{background:#78350f;color:#fbbf24}
+.table-wrap{overflow-x:auto;border-radius:10px;border:1px solid #2d3248}
+table{width:100%;border-collapse:collapse;min-width:1200px}
+thead tr{background:#0d1117;position:sticky;top:0;z-index:10}
+th{padding:10px 12px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#64748b;border-bottom:2px solid #2d3248;white-space:nowrap;cursor:pointer;user-select:none;transition:.15s}
+th:hover{color:#93c5fd;background:#1a1d2e}
+th.sort-asc::after{content:' ▲';color:#4f8ef7}
+th.sort-desc::after{content:' ▼';color:#4f8ef7}
+td{padding:9px 12px;font-size:12px;border-bottom:1px solid #1e2535;white-space:nowrap;vertical-align:middle}
+tr:hover td{background:#1e2535}
+tr.seg-gi td{border-left:3px solid #3b82f6}
+tr.seg-gt td{border-left:3px solid #10b981}
+tr.seg-li td{border-left:3px solid #8b5cf6}
+tr.seg-ft td{border-left:3px solid #f59e0b}
+.company-name{font-weight:600;color:#f1f5f9;font-size:13px}
+.seg-chip{display:inline-block;padding:2px 7px;border-radius:8px;font-size:10px;font-weight:700;margin-left:4px}
+.chip-gi{background:#1e3a8a;color:#93c5fd}
+.chip-gt{background:#064e3b;color:#34d399}
+.chip-li{background:#3b1f6e;color:#c084fc}
+.chip-ft{background:#78350f;color:#fbbf24}
+.num{text-align:right;color:#cbd5e1;font-variant-numeric:tabular-nums}
+.num-big{font-size:13px;font-weight:600;color:#f1f5f9}
+.pct{text-align:right;font-variant-numeric:tabular-nums}
+.pct-good{color:#22c55e;font-weight:600}
+.pct-warn{color:#fbbf24;font-weight:600}
+.pct-bad{color:#ef4444;font-weight:600}
+.bar-mini{display:inline-block;height:8px;border-radius:2px;margin-left:4px;vertical-align:middle}
+.rank-badge{background:#1e2535;border-radius:4px;padding:1px 5px;font-size:10px;color:#64748b;font-weight:700}
+.trend-pos{color:#22c55e}.trend-neg{color:#ef4444}.trend-neu{color:#94a3b8}
+.summary-bar{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:16px}
+.summary-stat{background:#1a1d2e;border:1px solid #2d3248;border-radius:8px;padding:10px 16px}
+.summary-stat .sv{font-size:18px;font-weight:700;color:#f1f5f9}
+.summary-stat .sl{font-size:11px;color:#64748b;margin-top:2px}
+.highlight-row td{background:#1e2d3d!important}
+.star{color:#fbbf24;font-size:12px}
+.tooltip{position:relative;cursor:help}
+.tooltip:hover::after{content:attr(data-tip);position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:#1e2535;color:#e2e8f0;padding:4px 8px;border-radius:4px;font-size:11px;white-space:nowrap;border:1px solid #2d3248;z-index:100}
+</style>
+</head>
+<body>
+<div class="page-header">
+  <div>
+    <h1>ISM Company Scorecard — All Segments</h1>
+    <div class="subtitle">All 38 Malaysian insurance companies &amp; takaful operators · Financial Year 2024 · RM Million unless stated</div>
+  </div>
+  <span class="badge">38 Companies</span>
+</div>
+
+<div class="container">
+
+<div class="summary-bar" id="summary-bar"></div>
+
+<div class="controls">
+  <div>
+    <label>Filter by Segment</label><br>
+    <div class="seg-filter" style="margin-top:6px">
+      <button class="seg-btn all active" onclick="setSegFilter('all',this)">All (38)</button>
+      <button class="seg-btn gi" onclick="setSegFilter('GI',this)">General Insurance (19)</button>
+      <button class="seg-btn gt" onclick="setSegFilter('GT',this)">General Takaful (4)</button>
+      <button class="seg-btn li" onclick="setSegFilter('LI',this)">Life Insurance (14)</button>
+      <button class="seg-btn ft" onclick="setSegFilter('FT',this)">Family Takaful (11)</button>
+    </div>
+  </div>
+  <div>
+    <label>Search Company</label><br>
+    <input type="text" id="searchInput" placeholder="Type company name..." oninput="filterTable()" style="margin-top:6px;width:220px">
+  </div>
+  <div>
+    <label>Metric Focus</label><br>
+    <select id="metricFocus" onchange="highlightMetric(this.value)" style="margin-top:6px">
+      <option value="">— None —</option>
+      <option value="gwp">Largest by Premium/Contribution</option>
+      <option value="nci">Best Loss Ratio (Non-Life)</option>
+      <option value="combined">Best Combined Ratio (Non-Life)</option>
+      <option value="uw">Most Underwriting Profit</option>
+      <option value="assets">Largest by Total Assets</option>
+    </select>
+  </div>
+</div>
+
+<div class="table-wrap">
+<table id="mainTable">
+<thead>
+<tr>
+  <th onclick="sortTable(0)" class="tooltip" data-tip="Row number">Rank</th>
+  <th onclick="sortTable(1)">Company</th>
+  <th onclick="sortTable(2)">Segment</th>
+  <th onclick="sortTable(3)" class="tooltip" data-tip="Gross Written Premium / Contribution 2024 (RM M)">GWP/GWC (M)</th>
+  <th onclick="sortTable(4)" class="tooltip" data-tip="Gross Direct Premium / Contribution 2024 (RM M)">GDP/GDC (M)</th>
+  <th onclick="sortTable(5)" class="tooltip" data-tip="Net Earned Premium / Contribution 2024 (RM M)">NEP/NEC (M)</th>
+  <th onclick="sortTable(6)" class="tooltip" data-tip="Net Claims Incurred 2024 (RM M)">NCI (M)</th>
+  <th onclick="sortTable(7)" class="tooltip" data-tip="Net Claims Incurred Ratio (%)">NCI Ratio</th>
+  <th onclick="sortTable(8)" class="tooltip" data-tip="Net Commissions Ratio (%)">Comm Ratio</th>
+  <th onclick="sortTable(9)" class="tooltip" data-tip="Management Expenses Ratio (%)">ME Ratio</th>
+  <th onclick="sortTable(10)" class="tooltip" data-tip="Combined Ratio = NCI + Comm + ME (%)">Combined</th>
+  <th onclick="sortTable(11)" class="tooltip" data-tip="Operating Ratio (%)">Op. Ratio</th>
+  <th onclick="sortTable(12)" class="tooltip" data-tip="Underwriting Profit / Loss (RM M)">UW P/L (M)</th>
+  <th onclick="sortTable(13)" class="tooltip" data-tip="Operating Profit / Loss (RM M)">Op. P/L (M)</th>
+  <th onclick="sortTable(14)" class="tooltip" data-tip="Total Assets (RM M)">Assets (M)</th>
+  <th onclick="sortTable(15)">YoY GWP</th>
+</tr>
+</thead>
+<tbody id="tableBody"></tbody>
+</table>
+</div>
+<div style="margin-top:12px;font-size:11px;color:#475569">
+  ★ Top 5 performer in metric. NCI Ratio, Combined Ratio, ME Ratio: lower = better. N/A = metric not applicable to segment (Life/FT).
+  <br>GWP = Gross Written Premium; GWC = Gross Written Contribution; NEP = Net Earned Premium; NEC = Net Earned Contribution; NCI = Net Claims Incurred.
+  <br>Life &amp; Family Takaful: Premium/Contribution figures are Net Premiums/Net Contributions. Assets = Total Insurance Fund Assets. Combined/NCI ratios: N/A.
+</div>
+</div>
+
+<script>
+// Full dataset – all 38 companies
+// Fields: [rank, name, seg, gwp, gdp, nep, nci, nciRatio, commRatio, meRatio, combined, opRatio, uwPL, opPL, assets, yoy]
+// seg: GI, GT, LI, FT
+// Life/FT: gwp=net premiums/contributions, gdp=gross direct, nep=net premiums, nci=total benefits, nciRatio/commRatio/meRatio/combined/opRatio = null
+const ALL = [
+// === GENERAL INSURANCE (19) ===
+{name:'AIA General',seg:'GI',gwp:335.6,gdp:335.4,nep:324.6,nci:166.2,nciR:51.19,commR:23.23,meR:26.45,combined:100.87,opR:94.26,uwPL:-2.8,opPL:18.6,assets:529.1,yoy:null,fy:'31-Dec-24'},
+{name:'AIG Malaysia',seg:'GI',gwp:874.3,gdp:719.7,nep:606.0,nci:247.9,nciR:40.92,commR:6.59,meR:31.11,combined:78.61,opR:71.05,uwPL:129.6,opPL:175.4,assets:1675.4,yoy:3.7,fy:'31-Dec-24'},
+{name:'Allianz General',seg:'GI',gwp:3412.7,gdp:3368.9,nep:2804.2,nci:1740.6,nciR:62.07,commR:11.75,meR:18.58,combined:92.40,opR:83.05,uwPL:213.0,opPL:475.2,assets:7574.7,yoy:14.3,fy:'31-Dec-24'},
+{name:'Berjaya Sompo',seg:'GI',gwp:1332.1,gdp:1311.9,nep:988.7,nci:563.9,nciR:57.03,commR:10.98,meR:24.48,combined:92.49,opR:78.99,uwPL:74.2,opPL:207.7,assets:2985.5,yoy:10.5,fy:'31-Dec-24'},
+{name:'Chubb Insurance',seg:'GI',gwp:719.0,gdp:662.2,nep:539.4,nci:236.6,nciR:43.87,commR:15.63,meR:33.66,combined:93.15,opR:81.51,uwPL:36.9,opPL:99.8,assets:1903.1,yoy:5.0,fy:'31-Dec-24'},
+{name:'Etiqa General',seg:'GI',gwp:2391.9,gdp:2359.2,nep:606.1,nci:418.5,nciR:69.05,commR:1.66,meR:29.12,combined:99.83,opR:90.04,uwPL:1.0,opPL:60.4,assets:1906.5,yoy:11.1,fy:'31-Dec-24'},
+{name:'Generali Insurance',seg:'GI',gwp:2110.8,gdp:2098.3,nep:1541.5,nci:913.5,nciR:59.26,commR:10.91,meR:29.46,combined:99.63,opR:89.79,uwPL:5.7,opPL:157.4,assets:4907.6,yoy:3.2,fy:'31-Dec-24'},
+{name:'GE General Insurance',seg:'GI',gwp:603.6,gdp:590.8,nep:367.3,nci:236.1,nciR:64.27,commR:10.71,meR:35.93,combined:110.90,opR:102.70,uwPL:-40.1,opPL:-9.9,assets:966.6,yoy:-15.5,fy:'31-Dec-24'},
+{name:'Liberty General',seg:'GI',gwp:2351.8,gdp:2327.3,nep:2010.5,nci:1210.7,nciR:60.22,commR:10.76,meR:23.30,combined:94.28,opR:88.20,uwPL:115.0,opPL:237.2,assets:3939.9,yoy:null,fy:'31-Dec-24'},
+{name:'Lonpac Insurance',seg:'GI',gwp:1714.0,gdp:1699.3,nep:1037.3,nci:451.9,nciR:43.56,commR:7.58,meR:21.46,combined:72.60,opR:63.10,uwPL:284.2,opPL:382.8,assets:2640.4,yoy:8.9,fy:'31-Dec-24'},
+{name:'MSIG Insurance',seg:'GI',gwp:1765.1,gdp:1760.6,nep:1328.4,nci:710.5,nciR:53.49,commR:10.81,meR:21.41,combined:85.70,opR:73.24,uwPL:189.9,opPL:355.4,assets:4199.8,yoy:3.4,fy:'31-Dec-24'},
+{name:'Pacific & Orient',seg:'GI',gwp:284.8,gdp:284.2,nep:136.4,nci:100.8,nciR:73.92,commR:3.04,meR:46.68,combined:123.64,opR:102.74,uwPL:-32.2,opPL:-3.7,assets:551.9,yoy:12.8,fy:'30-Sep-24'},
+{name:'The Pacific Insurance',seg:'GI',gwp:954.4,gdp:876.2,nep:346.8,nci:225.6,nciR:65.05,commR:4.07,meR:32.69,combined:101.82,opR:92.22,uwPL:-6.3,opPL:27.0,assets:1093.4,yoy:13.3,fy:'31-Dec-24'},
+{name:'Progressive Insurance',seg:'GI',gwp:143.3,gdp:135.2,nep:55.4,nci:24.9,nciR:44.98,commR:-0.37,meR:79.40,combined:124.00,opR:99.57,uwPL:-13.3,opPL:0.2,assets:484.0,yoy:-3.8,fy:'31-Dec-24'},
+{name:'QBE Insurance',seg:'GI',gwp:300.6,gdp:241.9,nep:183.4,nci:76.4,nciR:41.64,commR:13.92,meR:30.76,combined:86.32,opR:74.97,uwPL:25.1,opPL:45.9,assets:836.4,yoy:39.0,fy:'31-Dec-24'},
+{name:'RHB Insurance',seg:'GI',gwp:914.4,gdp:904.9,nep:499.3,nci:273.7,nciR:54.81,commR:9.77,meR:27.85,combined:92.43,opR:80.28,uwPL:37.8,opPL:98.5,assets:1522.3,yoy:5.3,fy:'31-Dec-24'},
+{name:'Tokio Marine Insurans',seg:'GI',gwp:1465.2,gdp:1457.0,nep:1126.7,nci:642.5,nciR:57.03,commR:9.62,meR:24.95,combined:91.59,opR:82.20,uwPL:94.8,opPL:200.6,assets:3273.7,yoy:9.8,fy:'31-Dec-24'},
+{name:'Tune Insurance',seg:'GI',gwp:310.6,gdp:285.7,nep:227.9,nci:125.6,nciR:55.11,commR:10.86,meR:46.42,combined:112.39,opR:90.61,uwPL:-28.2,opPL:21.4,assets:780.4,yoy:-13.0,fy:'31-Dec-24'},
+{name:'Zurich General',seg:'GI',gwp:1097.0,gdp:1087.4,nep:862.7,nci:586.7,nciR:68.00,commR:11.82,meR:21.00,combined:100.81,opR:92.40,uwPL:-7.0,opPL:65.6,assets:1974.2,yoy:7.0,fy:'31-Dec-24'},
+
+// === GENERAL TAKAFUL (4) ===
+{name:'Etiqa General Takaful',seg:'GT',gwp:null,gdp:null,nep:1975.9,nci:1333.7,nciR:67.50,commR:10.19,meR:25.24,combined:102.93,opR:96.91,uwPL:-57.8,opPL:61.0,assets:null,yoy:null,fy:'31-Dec-24'},
+{name:'Syarikat Takaful Malaysia Am (STMAB)',seg:'GT',gwp:null,gdp:null,nep:694.0,nci:430.3,nciR:62.01,commR:0.53,meR:44.44,combined:106.97,opR:98.65,uwPL:-48.4,opPL:9.3,assets:null,yoy:null,fy:'31-Dec-24'},
+{name:'Takaful Ikhlas General',seg:'GT',gwp:null,gdp:null,nep:498.2,nci:238.3,nciR:47.83,commR:6.60,meR:41.52,combined:95.95,opR:94.32,uwPL:20.2,opPL:28.3,assets:null,yoy:null,fy:'31-Mar-24'},
+{name:'Zurich General Takaful',seg:'GT',gwp:null,gdp:null,nep:1077.5,nci:699.2,nciR:64.89,commR:11.11,meR:22.03,combined:98.03,opR:92.35,uwPL:21.2,opPL:82.5,assets:null,yoy:null,fy:'31-Dec-24'},
+
+// === LIFE INSURANCE (14) ===
+{name:'AIA Bhd',seg:'LI',gwp:null,gdp:null,nep:10170.2,nci:7670.5,nciR:null,commR:null,meR:null,combined:null,opR:null,uwPL:null,opPL:null,assets:68276.2,yoy:null,fy:'31-Dec-24'},
+{name:'Allianz Life Insurance',seg:'LI',gwp:null,gdp:null,nep:3656.8,nci:2346.4,nciR:null,commR:null,meR:null,combined:null,opR:null,uwPL:null,opPL:null,assets:19975.3,yoy:null,fy:'31-Dec-24'},
+{name:'AmMetLife Insurance',seg:'LI',gwp:null,gdp:null,nep:794.2,nci:488.0,nciR:null,commR:null,meR:null,combined:null,opR:null,uwPL:null,opPL:null,assets:4368.4,yoy:null,fy:'31-Mar-24'},
+{name:'Etiqa Life Insurance',seg:'LI',gwp:null,gdp:null,nep:2224.4,nci:2368.5,nciR:null,commR:null,meR:null,combined:null,opR:null,uwPL:null,opPL:null,assets:13869.9,yoy:null,fy:'31-Dec-24'},
+{name:'FWD Insurance',seg:'LI',gwp:null,gdp:null,nep:183.2,nci:353.1,nciR:null,commR:null,meR:null,combined:null,opR:null,uwPL:null,opPL:null,assets:1893.1,yoy:null,fy:'31-Dec-24'},
+{name:'Generali Life Insurance',seg:'LI',gwp:null,gdp:null,nep:503.0,nci:385.7,nciR:null,commR:null,meR:null,combined:null,opR:null,uwPL:null,opPL:null,assets:2878.8,yoy:null,fy:'31-Dec-24'},
+{name:'Great Eastern Life',seg:'LI',gwp:null,gdp:null,nep:10192.4,nci:9110.7,nciR:null,commR:null,meR:null,combined:null,opR:null,uwPL:null,opPL:null,assets:101472.3,yoy:null,fy:'31-Dec-24'},
+{name:'Hong Leong Assurance',seg:'LI',gwp:null,gdp:null,nep:2909.9,nci:2252.4,nciR:null,commR:null,meR:null,combined:null,opR:null,uwPL:null,opPL:null,assets:27305.1,yoy:null,fy:'30-Jun-24'},
+{name:'Manulife Insurance',seg:'LI',gwp:null,gdp:null,nep:1238.4,nci:916.5,nciR:null,commR:null,meR:null,combined:null,opR:null,uwPL:null,opPL:null,assets:6537.3,yoy:null,fy:'31-Dec-24'},
+{name:'MCIS Insurance',seg:'LI',gwp:null,gdp:null,nep:707.1,nci:706.1,nciR:null,commR:null,meR:null,combined:null,opR:null,uwPL:null,opPL:null,assets:4331.0,yoy:null,fy:'31-Dec-24'},
+{name:'Prudential Assurance Malaysia',seg:'LI',gwp:null,gdp:null,nep:8708.0,nci:5798.1,nciR:null,commR:null,meR:null,combined:null,opR:null,uwPL:null,opPL:null,assets:52023.5,yoy:null,fy:'31-Dec-24'},
+{name:'Sun Life Malaysia Assurance',seg:'LI',gwp:null,gdp:null,nep:636.0,nci:347.7,nciR:null,commR:null,meR:null,combined:null,opR:null,uwPL:null,opPL:null,assets:3308.5,yoy:null,fy:'31-Dec-24'},
+{name:'Tokio Marine Life Insurance',seg:'LI',gwp:null,gdp:null,nep:1770.9,nci:1280.9,nciR:null,commR:null,meR:null,combined:null,opR:null,uwPL:null,opPL:null,assets:12164.6,yoy:null,fy:'31-Dec-24'},
+{name:'Zurich Life Insurance',seg:'LI',gwp:null,gdp:null,nep:809.0,nci:806.7,nciR:null,commR:null,meR:null,combined:null,opR:null,uwPL:null,opPL:null,assets:7348.5,yoy:null,fy:'31-Dec-24'},
+
+// === FAMILY TAKAFUL (11) ===
+{name:'AIA Public Takaful',seg:'FT',gwp:null,gdp:null,nep:1784.9,nci:926.9,nciR:null,commR:null,meR:null,combined:null,opR:null,uwPL:null,opPL:null,assets:null,yoy:null,fy:'31-Dec-24'},
+{name:'AmMetLife Takaful',seg:'FT',gwp:null,gdp:null,nep:139.7,nci:61.1,nciR:null,commR:null,meR:null,combined:null,opR:null,uwPL:null,opPL:null,assets:null,yoy:null,fy:'31-Mar-24'},
+{name:'Etiqa Family Takaful',seg:'FT',gwp:null,gdp:null,nep:2502.5,nci:1626.6,nciR:null,commR:null,meR:null,combined:null,opR:null,uwPL:null,opPL:null,assets:null,yoy:null,fy:'31-Dec-24'},
+{name:'FWD Takaful',seg:'FT',gwp:null,gdp:null,nep:607.0,nci:316.3,nciR:null,commR:null,meR:null,combined:null,opR:null,uwPL:null,opPL:null,assets:null,yoy:null,fy:'31-Dec-24'},
+{name:'Great Eastern Takaful',seg:'FT',gwp:null,gdp:null,nep:1445.7,nci:2823.1,nciR:null,commR:null,meR:null,combined:null,opR:null,uwPL:null,opPL:null,assets:null,yoy:null,fy:'31-Dec-24'},
+{name:'Hong Leong MSIG Takaful',seg:'FT',gwp:null,gdp:null,nep:501.1,nci:105.9,nciR:null,commR:null,meR:null,combined:null,opR:null,uwPL:null,opPL:null,assets:null,yoy:null,fy:'30-Jun-24'},
+{name:'Prudential BSN Takaful',seg:'FT',gwp:null,gdp:null,nep:3172.6,nci:1728.5,nciR:null,commR:null,meR:null,combined:null,opR:null,uwPL:null,opPL:null,assets:null,yoy:null,fy:'31-Dec-24'},
+{name:'Sun Life Malaysia Takaful',seg:'FT',gwp:null,gdp:null,nep:952.6,nci:345.7,nciR:null,commR:null,meR:null,combined:null,opR:null,uwPL:null,opPL:null,assets:null,yoy:null,fy:'31-Dec-24'},
+{name:'Syarikat Takaful Malaysia Keluarga (STMKB)',seg:'FT',gwp:null,gdp:null,nep:2461.2,nci:992.9,nciR:null,commR:null,meR:null,combined:null,opR:null,uwPL:null,opPL:null,assets:null,yoy:null,fy:'31-Dec-24'},
+{name:'Takaful Ikhlas Family',seg:'FT',gwp:null,gdp:null,nep:576.9,nci:363.2,nciR:null,commR:null,meR:null,combined:null,opR:null,uwPL:null,opPL:null,assets:null,yoy:null,fy:'31-Mar-24'},
+{name:'Zurich Takaful Malaysia',seg:'FT',gwp:null,gdp:null,nep:403.7,nci:211.7,nciR:null,commR:null,meR:null,combined:null,opR:null,uwPL:null,opPL:null,assets:null,yoy:null,fy:'31-Dec-24'},
+];
+
+let currentFilter='all',sortCol=3,sortDir=-1,searchVal='';
+
+function fmt(v,dec=0){if(v===null||v===undefined)return '<span style="color:#2d3248">—</span>';return typeof v==='number'?v.toLocaleString('en-MY',{minimumFractionDigits:dec,maximumFractionDigits:dec}):v}
+function fmtPct(v){if(v===null||v===undefined)return '<span style="color:#2d3248">—</span>';const cls=v<70?'pct-good':v<90?'pct-warn':'pct-bad';return `<span class="${cls}">${v.toFixed(1)}%</span>`}
+function fmtPL(v){if(v===null||v===undefined)return '<span style="color:#2d3248">—</span>';const col=v>=0?'#22c55e':'#ef4444';return `<span style="color:${col};font-weight:600">${v>=0?'+':''}${v.toLocaleString('en-MY',{minimumFractionDigits:1,maximumFractionDigits:1})}</span>`}
+function fmtYoy(v){if(v===null||v===undefined)return '<span style="color:#2d3248">—</span>';const col=v>=0?'#22c55e':'#ef4444';return `<span style="${v>=0?'color:#22c55e':'color:#ef4444'}">${v>=0?'▲':' ▼'} ${Math.abs(v).toFixed(1)}%</span>`}
+function segChip(seg){const m={GI:'chip-gi GI',GT:'chip-gt GT',LI:'chip-li LI',FT:'chip-ft FT'};return `<span class="seg-chip ${m[seg]}">${seg}</span>`}
+function nciColor(v){if(v===null)return '';return v<50?'pct-good':v<65?'pct-warn':'pct-bad'}
+
+function setSegFilter(seg,btn){
+  currentFilter=seg;
+  document.querySelectorAll('.seg-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTable();
+}
+
+function filterTable(){searchVal=document.getElementById('searchInput').value.toLowerCase();renderTable();}
+
+function sortTable(col){
+  if(sortCol===col)sortDir*=-1;else{sortCol=col;sortDir=-1;}
+  document.querySelectorAll('th').forEach((t,i)=>{t.classList.remove('sort-asc','sort-desc');if(i===col)t.classList.add(sortDir===1?'sort-asc':'sort-desc');});
+  renderTable();
+}
+
+function getVal(d,col){
+  switch(col){
+    case 0:return 0;case 1:return d.name;case 2:return d.seg;
+    case 3:return d.gwp??d.nep;case 4:return d.gdp??d.nep;case 5:return d.nep;
+    case 6:return d.nci;case 7:return d.nciR;case 8:return d.commR;
+    case 9:return d.meR;case 10:return d.combined;case 11:return d.opR;
+    case 12:return d.uwPL;case 13:return d.opPL;case 14:return d.assets;case 15:return d.yoy;
+  }
+}
+
+function renderTable(){
+  const filtered=ALL.filter(d=>{
+    if(currentFilter!=='all'&&d.seg!==currentFilter)return false;
+    if(searchVal&&!d.name.toLowerCase().includes(searchVal))return false;
+    return true;
+  });
+
+  filtered.sort((a,b)=>{
+    const av=getVal(a,sortCol),bv=getVal(b,sortCol);
+    if(av===null&&bv===null)return 0;if(av===null)return 1;if(bv===null)return -1;
+    if(typeof av==='string')return sortDir*av.localeCompare(bv);
+    return sortDir*(av-bv);
+  });
+
+  // find max for bar sizing
+  const maxNEP=Math.max(...filtered.map(d=>d.nep||0));
+  const maxAssets=Math.max(...filtered.filter(d=>d.assets).map(d=>d.assets));
+
+  const tbody=document.getElementById('tableBody');
+  tbody.innerHTML=filtered.map((d,i)=>{
+    const nepBar=`<div class="bar-mini" style="width:${Math.round(((d.nep||0)/maxNEP)*60)}px;background:${{GI:'#3b82f6',GT:'#10b981',LI:'#8b5cf6',FT:'#f59e0b'}[d.seg]}"></div>`;
+    const assBar=d.assets?`<div class="bar-mini" style="width:${Math.round((d.assets/maxAssets)*50)}px;background:#475569"></div>`:'';
+    const nciRClass=nciColor(d.nciR);
+    return `<tr class="seg-${d.seg.toLowerCase()}">
+      <td><span class="rank-badge">${i+1}</span></td>
+      <td><span class="company-name">${d.name}</span><br><span style="font-size:10px;color:#475569">${d.fy}</span></td>
+      <td>${segChip(d.seg)}</td>
+      <td class="num num-big">${d.gwp||d.nep?fmt(d.gwp??d.nep,0):fmt(null)}</td>
+      <td class="num">${fmt(d.gdp??d.nep,0)}</td>
+      <td class="num num-big">${fmt(d.nep,0)}${nepBar}</td>
+      <td class="num">${fmt(d.nci,0)}</td>
+      <td class="pct"><span class="${nciRClass}">${d.nciR!==null?d.nciR.toFixed(1)+'%':'—'}</span></td>
+      <td class="pct">${d.commR!==null?d.commR.toFixed(1)+'%':'<span style="color:#2d3248">—</span>'}</td>
+      <td class="pct">${d.meR!==null?d.meR.toFixed(1)+'%':'<span style="color:#2d3248">—</span>'}</td>
+      <td class="pct">${d.combined!==null?fmtPct(d.combined):'<span style="color:#2d3248">—</span>'}</td>
+      <td class="pct">${d.opR!==null?d.opR.toFixed(1)+'%':'<span style="color:#2d3248">—</span>'}</td>
+      <td class="num">${fmtPL(d.uwPL)}</td>
+      <td class="num">${fmtPL(d.opPL)}</td>
+      <td class="num">${d.assets?fmt(d.assets,0)+assBar:'<span style="color:#2d3248">—</span>'}</td>
+      <td>${fmtYoy(d.yoy)}</td>
+    </tr>`;
+  }).join('');
+
+  updateSummary(filtered);
+}
+
+function updateSummary(data){
+  const nonLife=data.filter(d=>d.seg==='GI'||d.seg==='GT');
+  const totalNEP=data.reduce((s,d)=>s+(d.nep||0),0);
+  const withCombined=nonLife.filter(d=>d.combined!==null);
+  const avgCombined=withCombined.length?withCombined.reduce((s,d)=>s+d.combined,0)/withCombined.length:null;
+  const totalUW=nonLife.reduce((s,d)=>s+(d.uwPL||0),0);
+  document.getElementById('summary-bar').innerHTML=`
+    <div class="summary-stat"><div class="sv">${data.length}</div><div class="sl">Companies Shown</div></div>
+    <div class="summary-stat"><div class="sv">RM ${(totalNEP/1000).toFixed(1)}B</div><div class="sl">Total NEP/NEC</div></div>
+    ${avgCombined?`<div class="summary-stat"><div class="sv">${avgCombined.toFixed(1)}%</div><div class="sl">Avg Combined Ratio (Non-Life)</div></div>`:''}
+    ${nonLife.length?`<div class="summary-stat"><div class="sv" style="color:${totalUW>=0?'#22c55e':'#ef4444'}">${totalUW>=0?'+':''}RM ${totalUW.toFixed(0)}M</div><div class="sl">Total UW Profit (Non-Life)</div></div>`:''}
+  `;
+}
+
+function highlightMetric(val){
+  document.querySelectorAll('tr').forEach(r=>r.classList.remove('highlight-row'));
+  if(!val)return;
+  const map={gwp:{col:3,dir:-1},nci:{col:7,dir:1},combined:{col:10,dir:1},uw:{col:12,dir:-1},assets:{col:14,dir:-1}};
+  const m=map[val];if(!m)return;
+  sortCol=m.col;sortDir=m.dir;
+  document.querySelectorAll('th').forEach((t,i)=>{t.classList.remove('sort-asc','sort-desc');if(i===m.col)t.classList.add(m.dir===1?'sort-asc':'sort-desc');});
+  renderTable();
+  // highlight top 5
+  const rows=document.querySelectorAll('#tableBody tr');
+  for(let i=0;i<Math.min(5,rows.length);i++)rows[i].classList.add('highlight-row');
+}
+
+// Initial render
+sortCol=3;sortDir=-1;
+document.querySelectorAll('th').forEach((t,i)=>{if(i===3)t.classList.add('sort-desc');});
+renderTable();
+</script>
+</body>
+</html>

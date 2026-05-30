@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ISM Life & Family Takaful Analysis – FY2024</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0d1117;color:#e2e8f0;font-family:'Segoe UI',system-ui,sans-serif;font-size:14px;line-height:1.5}
+::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-track{background:#1a1d2e}::-webkit-scrollbar-thumb{background:#8b5cf6;border-radius:3px}
+.page-header{background:linear-gradient(135deg,#2d1b5e 0%,#1a1d2e 100%);padding:20px 28px;border-bottom:1px solid #2d3248;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+h1{font-size:22px;font-weight:700;color:#f8fafc}
+h2{font-size:15px;font-weight:600;color:#cbd5e1;margin-bottom:12px;text-transform:uppercase;letter-spacing:.5px}
+h3{font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px}
+.subtitle{color:#94a3b8;font-size:12px;margin-top:4px}
+.badge{background:#3b1f6e;color:#c084fc;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600}
+.container{max-width:1700px;margin:0 auto;padding:20px}
+.section{margin-bottom:28px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+@media(max-width:1100px){.grid-2,.grid-3{grid-template-columns:1fr}.grid-4{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.grid-4{grid-template-columns:1fr}}
+.card{background:#1a1d2e;border:1px solid #2d3248;border-radius:12px;padding:18px 20px}
+.tabs{display:flex;gap:4px;margin-bottom:20px;background:#0d1117;border:1px solid #2d3248;border-radius:8px;padding:4px;flex-wrap:wrap}
+.tab{padding:7px 16px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;color:#94a3b8;transition:.15s;border:none;background:transparent;text-transform:uppercase;letter-spacing:.3px}
+.tab.active{background:#3b1f6e;color:#c084fc}
+.tab:hover:not(.active){background:#1a1d2e;color:#e2e8f0}
+canvas{display:block;max-width:100%;width:100%}
+.legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:#94a3b8}
+.legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px;margin-bottom:20px}
+.kpi{background:#1a1d2e;border:1px solid #2d3248;border-radius:10px;padding:14px 16px;position:relative;overflow:hidden}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.kpi.li::before{background:linear-gradient(90deg,#8b5cf6,#a78bfa)}
+.kpi.ft::before{background:linear-gradient(90deg,#f59e0b,#fbbf24)}
+.kv{font-size:21px;font-weight:700;color:#f1f5f9;letter-spacing:-.5px;margin-bottom:2px}
+.kl{font-size:11px;color:#64748b;margin-bottom:4px}
+.ks{font-size:11px;font-weight:600}
+.data-table{width:100%;border-collapse:collapse}
+.data-table th{background:#0d1117;color:#64748b;font-size:10px;text-transform:uppercase;letter-spacing:.5px;padding:7px 10px;border-bottom:1px solid #2d3248;font-weight:700;cursor:pointer;white-space:nowrap}
+.data-table th:hover{color:#c084fc}
+.data-table th:not(:first-child){text-align:right}
+.data-table td{padding:8px 10px;border-bottom:1px solid #1e2535;font-size:12px;color:#cbd5e1;white-space:nowrap}
+.data-table td:not(:first-child){text-align:right}
+.data-table td:first-child{color:#f1f5f9;font-weight:500}
+.data-table tr:hover td{background:#1e2535}
+.data-table tr.total-row td{background:#1e2535;font-weight:700;color:#fff;border-bottom:none}
+.data-table tr.seg-li td{border-left:3px solid #8b5cf6}
+.data-table tr.seg-ft td{border-left:3px solid #f59e0b}
+.chip{display:inline-block;padding:2px 7px;border-radius:6px;font-size:10px;font-weight:700}
+.chip-up{background:#064e3b;color:#34d399}
+.chip-dn{background:#7f1d1d;color:#fca5a5}
+.chip-nu{background:#1e2535;color:#94a3b8}
+.chip-li{background:#3b1f6e;color:#c084fc}
+.chip-ft{background:#78350f;color:#fbbf24}
+.rank{background:#1e2535;border-radius:3px;padding:1px 4px;font-size:10px;color:#64748b;font-weight:700;margin-right:4px}
+.note{font-size:10px;color:#475569;margin-top:10px;font-style:italic}
+.pct-good{color:#22c55e;font-weight:600}
+.pct-warn{color:#fbbf24;font-weight:600}
+.pct-bad{color:#ef4444;font-weight:600}
+.metric-pair{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #1e2535}
+.metric-pair:last-child{border-bottom:none}
+.metric-pair .ml{font-size:12px;color:#94a3b8}
+.metric-pair .mr{font-size:13px;font-weight:600;color:#f1f5f9}
+.seg-header{background:#0d1117;color:#8b5cf6;font-size:10px;text-transform:uppercase;letter-spacing:.5px;padding:8px 10px 3px;font-weight:700}
+.seg-header.ft{color:#f59e0b}
+.progress-bar{height:6px;background:#0d1117;border-radius:3px;overflow:hidden;margin-top:3px}
+.progress-fill{height:100%;border-radius:3px}
+</style>
+</head>
+<body>
+<div class="page-header">
+  <div>
+    <h1>Life Insurance &amp; Family Takaful — Deep Dive</h1>
+    <div class="subtitle">14 Life Insurers + 11 Family Takaful Operators · Malaysia · Financial Year 2024 · RM Million unless stated</div>
+  </div>
+  <span class="badge">25 Companies</span>
+</div>
+
+<div class="container">
+
+<!-- KPI Overview -->
+<div class="kpi-grid">
+  <div class="kpi li"><div class="kl">Life Insurance — New Business (Total)</div><div class="kv">RM 15,097M</div><div class="ks" style="color:#22c55e">▲ +13.4% vs 2023</div></div>
+  <div class="kpi li"><div class="kl">Life — Single Premiums</div><div class="kv">RM 7,561M</div><div class="ks" style="color:#22c55e">▲ +20.9% vs 2023</div></div>
+  <div class="kpi li"><div class="kl">Life — Annual Premiums</div><div class="kv">RM 7,536M</div><div class="ks" style="color:#22c55e">▲ +6.6% vs 2023</div></div>
+  <div class="kpi li"><div class="kl">Investment-Linked Plans (ILP)</div><div class="kv">50.4%</div><div class="ks" style="color:#22c55e">▲ Share up from 46.3% in 2023</div></div>
+  <div class="kpi li"><div class="kl">Life — Total Assets (14 Insurers)</div><div class="kv">RM 325.8B</div><div class="ks" style="color:#22c55e">▲ +9.1% from RM 298.6B</div></div>
+  <div class="kpi li"><div class="kl">Life — In-Force Policies (Individual)</div><div class="kv">12.953M</div><div class="ks" style="color:#ef4444">▼ Net decrease (terminations &gt; new)</div></div>
+  <div class="kpi ft"><div class="kl">Family Takaful — New Business</div><div class="kv">RM 9,732M</div><div class="ks" style="color:#22c55e">▲ +1.5% vs 2023</div></div>
+  <div class="kpi ft"><div class="kl">FT — Individual Ordinary Family</div><div class="kv">RM 3,591M</div><div class="ks" style="color:#22c55e">▲ +7.8% vs 2023</div></div>
+  <div class="kpi ft"><div class="kl">FT — Group Ordinary Family</div><div class="kv">RM 5,163M</div><div class="ks" style="color:#ef4444">▼ –7.4% vs 2023</div></div>
+  <div class="kpi ft"><div class="kl">FT — Investment-Linked Plans</div><div class="kv">RM 999M</div><div class="ks" style="color:#22c55e">▲ +22.7% vs 2023</div></div>
+  <div class="kpi ft"><div class="kl">Family Takaful — Certs In-Force</div><div class="kv">6.686M</div><div class="ks" style="color:#22c55e">▲ +1.3% from 6.601M in 2023</div></div>
+  <div class="kpi ft"><div class="kl">FT — Total Assets (Takaful Funds)</div><div class="kv">RM ~62.3B</div><div class="ks" style="color:#22c55e">▲ vs RM ~54.8B in 2023</div></div>
+</div>
+
+<!-- Tabs -->
+<div class="tabs">
+  <button class="tab active" onclick="showTab('overview',this)">Market Overview</button>
+  <button class="tab" onclick="showTab('companies',this)">Company Rankings</button>
+  <button class="tab" onclick="showTab('products',this)">Product Mix</button>
+  <button class="tab" onclick="showTab('policies',this)">Policies & Certificates</button>
+  <button class="tab" onclick="showTab('financials',this)">Financial Statements</button>
+  <button class="tab" onclick="showTab('benefits',this)">Benefits Paid</button>
+</div>
+
+<!-- TAB: Market Overview -->
+<div id="tab-overview" class="tab-content">
+  <div class="grid-2">
+    <div class="card">
+      <h2>New Business Growth — Life Insurance 2019–2024 (RM M)</h2>
+      <canvas id="lifeNewBizChart" height="280"></canvas>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#8b5cf6"></div>Individual Ordinary Life</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div>Group Ordinary Life</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#06b6d4"></div>Investment-Linked</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div>Individual Annuity</div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>New Business Growth — Family Takaful 2019–2024 (RM M)</h2>
+      <canvas id="ftNewBizChart" height="280"></canvas>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div>Individual Ordinary Family</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#ef4444"></div>Group Ordinary Family</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#fbbf24"></div>Investment-Linked</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-2" style="margin-top:20px">
+    <div class="card">
+      <h2>Life Insurance — New Business by Key Product (2024 RM M)</h2>
+      <div id="lifeProductBars"></div>
+      <p class="note">Based on individual new business premiums. Growth rates vs 2023.</p>
+    </div>
+    <div class="card">
+      <h2>Family Takaful — New Business by Key Product (2024 RM M)</h2>
+      <div id="ftProductBars"></div>
+      <p class="note">Based on new certificate contributions. Growth rates vs 2023.</p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px">
+    <h2>Life Insurance vs Family Takaful — 5-Year Market Comparison</h2>
+    <div style="overflow-x:auto">
+    <table class="data-table">
+      <thead><tr><th>Metric</th><th>2020</th><th>2021</th><th>2022</th><th>2023</th><th>2024</th><th>CAGR</th></tr></thead>
+      <tbody>
+        <tr><td colspan="7" class="seg-header">Life Insurance</td></tr>
+        <tr><td>New Business — Single Premiums (M)</td><td>5,572</td><td>5,150</td><td>6,238</td><td>6,257</td><td>7,561</td><td><span class="chip chip-up">+7.9%</span></td></tr>
+        <tr><td>New Business — Annual Premiums (M)</td><td>5,104</td><td>5,538</td><td>5,740</td><td>7,071</td><td>7,536</td><td><span class="chip chip-up">+10.2%</span></td></tr>
+        <tr><td>Total New Business Premiums (M)</td><td>10,676</td><td>10,688</td><td>11,978</td><td>13,328</td><td>15,097</td><td><span class="chip chip-up">+9.0%</span></td></tr>
+        <tr><td>In-Force Policies — Individual (M)</td><td>—</td><td>—</td><td>—</td><td>~13.3</td><td>12.953</td><td><span class="chip chip-dn">—</span></td></tr>
+        <tr><td colspan="7" class="seg-header ft">Family Takaful</td></tr>
+        <tr><td>New Business — Single Contributions (M)</td><td>1,306</td><td>1,498</td><td>2,263</td><td>2,158</td><td>2,185</td><td><span class="chip chip-up">+13.7%</span></td></tr>
+        <tr><td>New Business — Annual Contributions (M)</td><td>5,092</td><td>6,271</td><td>7,469</td><td>7,432</td><td>7,547</td><td><span class="chip chip-up">+10.3%</span></td></tr>
+        <tr><td>Total New Business Contributions (M)</td><td>6,398</td><td>7,769</td><td>9,732</td><td>9,590</td><td>9,732</td><td><span class="chip chip-up">+11.1%</span></td></tr>
+        <tr><td>Certificates In-Force (M)</td><td>5.510</td><td>6.073</td><td>6.627</td><td>6.601</td><td>6.686</td><td><span class="chip chip-up">+4.9%</span></td></tr>
+        <tr class="total-row"><td>Combined Life + FT New Business (M)</td><td>17,074</td><td>18,457</td><td>21,710</td><td>22,918</td><td>24,829</td><td><span class="chip chip-up">+9.8%</span></td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+</div>
+
+<!-- TAB: Company Rankings -->
+<div id="tab-companies" class="tab-content" style="display:none">
+
+  <div class="grid-2">
+    <div class="card">
+      <h2>Life Insurance — Net Premiums by Company 2024 (RM M)</h2>
+      <canvas id="lifeCompChart" height="440"></canvas>
+    </div>
+    <div class="card">
+      <h2>Family Takaful — Net Contributions by Company 2024 (RM M)</h2>
+      <canvas id="ftCompChart" height="340"></canvas>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px">
+    <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+      <button class="tab" style="font-size:11px;padding:5px 12px" id="showLifeBtn" onclick="showCompSeg('li')">Life Insurance (14)</button>
+      <button class="tab" style="font-size:11px;padding:5px 12px" id="showFTBtn" onclick="showCompSeg('ft')">Family Takaful (11)</button>
+      <button class="tab active" style="font-size:11px;padding:5px 12px" id="showAllBtn" onclick="showCompSeg('all')">All 25</button>
+    </div>
+    <h2>All Companies — Key Metrics Sortable Table</h2>
+    <div style="overflow-x:auto">
+    <table class="data-table" id="allCompTable">
+      <thead><tr>
+        <th onclick="sortAllComp(0)">#</th>
+        <th onclick="sortAllComp(1)">Company</th>
+        <th onclick="sortAllComp(2)">Seg</th>
+        <th onclick="sortAllComp(3)">Net Prem/Contrib (M)</th>
+        <th onclick="sortAllComp(4)">Total Benefits (M)</th>
+        <th onclick="sortAllComp(5)">Benefit Ratio %</th>
+        <th onclick="sortAllComp(6)">Agency Remuneration (M)</th>
+        <th onclick="sortAllComp(7)">Management Exp (M)</th>
+        <th onclick="sortAllComp(8)">Total Assets (M)</th>
+        <th onclick="sortAllComp(9)">FY End</th>
+      </tr></thead>
+      <tbody id="allCompBody"></tbody>
+    </table>
+    </div>
+    <p class="note">Benefit Ratio = Total Net Policy/Certificate Benefits ÷ Net Premiums/Contributions. For Life/FT, this reflects how much of premium income is paid out as benefits — a higher ratio is not necessarily bad (mature policies paying out). Total Assets = Insurance Fund / Takaful Fund Assets.</p>
+  </div>
+</div>
+
+<!-- TAB: Product Mix -->
+<div id="tab-products" class="tab-content" style="display:none">
+  <div class="grid-2">
+    <div class="card">
+      <h2>Life Insurance — 2024 New Business by Plan Type</h2>
+      <div style="display:flex;flex-direction:column;gap:8px;margin:12px 0" id="lifePlanMix"></div>
+      <h3 style="margin-top:16px">Plan Mix vs 2023</h3>
+      <canvas id="lifePlanTrendChart" height="220"></canvas>
+    </div>
+    <div class="card">
+      <h2>Family Takaful — 2024 New Business by Plan Type</h2>
+      <div style="display:flex;flex-direction:column;gap:8px;margin:12px 0" id="ftPlanMix"></div>
+      <h3 style="margin-top:16px">Plan Mix vs 2023</h3>
+      <canvas id="ftPlanTrendChart" height="220"></canvas>
+    </div>
+  </div>
+
+  <div class="grid-2" style="margin-top:20px">
+    <div class="card">
+      <h2>Life Insurance — New Business by Key Product 2019–2024 (RM M)</h2>
+      <canvas id="lifeProductTrendChart" height="280"></canvas>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#8b5cf6"></div>Whole Life</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div>Endowment</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#06b6d4"></div>Temporary</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#10b981"></div>Medical &amp; Health</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div>Other Plans</div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Family Takaful — New Business by Key Product 2019–2024 (RM M)</h2>
+      <canvas id="ftProductTrendChart" height="280"></canvas>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div>Temporary</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#ef4444"></div>Endowment</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#fbbf24"></div>Medical &amp; Health</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#fb923c"></div>Riders</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px">
+    <h2>Life Insurance — Key Product Trends &amp; Growth Rates</h2>
+    <div style="overflow-x:auto">
+    <table class="data-table">
+      <thead><tr><th>Product</th><th>2022 (M)</th><th>2023 (M)</th><th>2024 (M)</th><th>YoY Growth</th><th>Share 2024</th><th>Trend</th></tr></thead>
+      <tbody>
+        <tr><td>Whole Life</td><td>3,001</td><td>3,840</td><td>4,840</td><td><span class="pct-good">+26.0%</span></td><td>32.1%</td><td>▲ Strong growth</td></tr>
+        <tr><td>Endowment</td><td>3,790</td><td>3,830</td><td>4,020</td><td><span class="pct-good">+5.0%</span></td><td>26.6%</td><td>↗ Moderate</td></tr>
+        <tr><td>Medical &amp; Health</td><td>1,880</td><td>2,230</td><td>2,630</td><td><span class="pct-good">+16.2%</span></td><td>17.4%</td><td>▲ Consistent</td></tr>
+        <tr><td>Temporary</td><td>2,170</td><td>2,430</td><td>2,520</td><td><span class="pct-good">+4.8%</span></td><td>16.7%</td><td>↗ Moderate</td></tr>
+        <tr><td>Individual Annuity</td><td>80</td><td>70</td><td>80</td><td><span class="chip chip-nu">+14.3%</span></td><td>0.5%</td><td>→ Stable/small</td></tr>
+        <tr><td>Other Plans</td><td>270</td><td>280</td><td>260</td><td><span class="pct-bad">–7.1%</span></td><td>1.7%</td><td>▼ Declining</td></tr>
+        <tr><td>Riders</td><td>780</td><td>680</td><td>748</td><td><span class="pct-good">+10.0%</span></td><td>5.0%</td><td>↗ Recovery</td></tr>
+        <tr class="total-row"><td>Total</td><td>11,978</td><td>13,328</td><td>15,097</td><td><span class="pct-good">+13.4%</span></td><td>100%</td><td>▲ Strong</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+</div>
+
+<!-- TAB: Policies & Certificates -->
+<div id="tab-policies" class="tab-content" style="display:none">
+  <div class="grid-2">
+    <div class="card">
+      <h2>Life Insurance — Policies In-Force Composition 2024</h2>
+      <div id="lifePoliciesInForce"></div>
+      <hr style="border-color:#2d3248;margin:16px 0">
+      <h3>New Policies Issued vs Terminations 2024</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px">
+        <div style="background:#0d1117;border-radius:8px;padding:12px">
+          <div style="font-size:11px;color:#64748b;margin-bottom:4px">New Policies Issued</div>
+          <div style="font-size:22px;font-weight:700;color:#22c55e">1.196M</div>
+          <div style="font-size:11px;color:#94a3b8;margin-top:4px">Individual: 1.196M total<br>Group policies: 3.103B premium</div>
+        </div>
+        <div style="background:#0d1117;border-radius:8px;padding:12px">
+          <div style="font-size:11px;color:#64748b;margin-bottom:4px">Terminations</div>
+          <div style="font-size:22px;font-weight:700;color:#ef4444">1.222M</div>
+          <div style="font-size:11px;color:#94a3b8;margin-top:4px">Net change: –26K policies<br>Lapse rate concern</div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Family Takaful — Certificates In-Force Composition 2024</h2>
+      <div id="ftCertsInForce"></div>
+      <hr style="border-color:#2d3248;margin:16px 0">
+      <h3>New Certificates Issued vs Terminations 2024</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px">
+        <div style="background:#0d1117;border-radius:8px;padding:12px">
+          <div style="font-size:11px;color:#64748b;margin-bottom:4px">New Certificates Issued</div>
+          <div style="font-size:22px;font-weight:700;color:#22c55e">984K</div>
+          <div style="font-size:11px;color:#94a3b8;margin-top:4px">Ind. Ordinary: 740K<br>Group: 120K | ILP: 134K</div>
+        </div>
+        <div style="background:#0d1117;border-radius:8px;padding:12px">
+          <div style="font-size:11px;color:#64748b;margin-bottom:4px">Terminations</div>
+          <div style="font-size:22px;font-weight:700;color:#ef4444">928K</div>
+          <div style="font-size:11px;color:#94a3b8;margin-top:4px">Net increase: +56K certs<br>In-force: 6.686M</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-2" style="margin-top:20px">
+    <div class="card">
+      <h2>Life Insurance — In-Force Policies Trend 2020–2024 (Million)</h2>
+      <canvas id="lifePoliciesTrendChart" height="240"></canvas>
+    </div>
+    <div class="card">
+      <h2>Family Takaful — Certificates In-Force Trend 2020–2024 (Million)</h2>
+      <canvas id="ftCertsTrendChart" height="240"></canvas>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px">
+    <h2>Family Takaful — New Certificates Issued 2020–2024 (Thousand)</h2>
+    <div style="overflow-x:auto">
+    <table class="data-table">
+      <thead><tr><th>Plan Type</th><th>2020</th><th>2021</th><th>2022</th><th>2023</th><th>2024</th><th>2024 Share</th></tr></thead>
+      <tbody>
+        <tr><td>Individual Ordinary Family</td><td>552</td><td>914</td><td>1,094</td><td>837</td><td>740</td><td>74.5%</td></tr>
+        <tr><td>Group Ordinary Family</td><td>65</td><td>61</td><td>79</td><td>128</td><td>120</td><td>12.1%</td></tr>
+        <tr><td>Annuity</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0.0%</td></tr>
+        <tr><td>Investment-Linked</td><td>222</td><td>161</td><td>140</td><td>167</td><td>134</td><td>13.5%</td></tr>
+        <tr class="total-row"><td>Total (thousand)</td><td>839</td><td>1,135</td><td>1,313</td><td>1,132</td><td>993</td><td>100%</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="note">Group ordinary family refers to group schemes. Investment-linked certificates include both individual and group. Annuity certificates not issued in this period.</p>
+  </div>
+</div>
+
+<!-- TAB: Financial Statements -->
+<div id="tab-financials" class="tab-content" style="display:none">
+
+  <div class="card" style="margin-bottom:20px">
+    <h2>Life Insurance — Total Assets by Company 2024 (RM Million)</h2>
+    <canvas id="lifeAssetsChart" height="360"></canvas>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#8b5cf6"></div>Ordinary Fund</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#a78bfa"></div>Investment-Linked Fund</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#c084fc"></div>Annuity Fund</div>
+    </div>
+    <p class="note">GE Life dominates with RM 101.5B in assets. Prudential 2nd at RM 52.0B, AIA 3rd at RM 68.3B.</p>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h2>Life Insurance Industry — Fund Totals 2024 (RM M)</h2>
+      <div class="metric-pair"><span class="ml">Total Assets (All 14 Insurers)</span><span class="mr">RM 325,753M</span></div>
+      <div class="metric-pair"><span class="ml">Ordinary Fund Beginning of Year</span><span class="mr">RM 164,392M</span></div>
+      <div class="metric-pair"><span class="ml">Investment-Linked Fund Beginning</span><span class="mr">RM 82,180M</span></div>
+      <div class="metric-pair"><span class="ml">Annuity Fund Beginning</span><span class="mr">RM 3,469M</span></div>
+      <div class="metric-pair"><span class="ml">Total Income (All Funds)</span><span class="mr">RM 326,226M</span></div>
+      <div class="metric-pair"><span class="ml">Net Policy Benefits Paid</span><span class="mr">RM 34,831M</span></div>
+      <div class="metric-pair"><span class="ml">Agency Remuneration</span><span class="mr">RM 5,586M</span></div>
+      <div class="metric-pair"><span class="ml">Management Expenses</span><span class="mr">RM 4,652M</span></div>
+      <div class="metric-pair"><span class="ml">Net Premiums</span><span class="mr">RM 44,504M</span></div>
+      <div class="metric-pair"><span class="ml">Net Investment Income</span><span class="mr">RM 12,255M</span></div>
+      <div class="metric-pair"><span class="ml">Transfers to Income Statement</span><span class="mr">RM 2,105M</span></div>
+    </div>
+    <div class="card">
+      <h2>Family Takaful Industry — Fund Totals 2024 (RM M)</h2>
+      <div class="metric-pair"><span class="ml">Total Income (All Operators)</span><span class="mr">RM 62,285M</span></div>
+      <div class="metric-pair"><span class="ml">Fund Beginning of Year (Total)</span><span class="mr">RM 42,355M</span></div>
+      <div class="metric-pair"><span class="ml">Net Contribution Income</span><span class="mr">RM 14,548M</span></div>
+      <div class="metric-pair"><span class="ml">Net Investment Income</span><span class="mr">RM 1,864M</span></div>
+      <div class="metric-pair"><span class="ml">Net Certificate Benefits</span><span class="mr">RM 9,502M</span></div>
+      <div class="metric-pair"><span class="ml">— Death Benefits</span><span class="mr">RM 868M</span></div>
+      <div class="metric-pair"><span class="ml">— Maturity Benefits</span><span class="mr">RM 325M</span></div>
+      <div class="metric-pair"><span class="ml">— Surrender Benefits</span><span class="mr">RM 2,543M</span></div>
+      <div class="metric-pair"><span class="ml">— Other Benefits</span><span class="mr">RM 5,766M</span></div>
+      <div class="metric-pair"><span class="ml">Management Expenses</span><span class="mr">RM ~4,200M</span></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px">
+    <h2>Life Insurance — Revenue Account Summary by Company 2024 (RM Million)</h2>
+    <div style="overflow-x:auto">
+    <table class="data-table" id="lifeFinTable">
+      <thead><tr>
+        <th onclick="sortLifeFin(0)">#</th>
+        <th onclick="sortLifeFin(1)">Company</th>
+        <th onclick="sortLifeFin(2)">Net Premiums (M)</th>
+        <th onclick="sortLifeFin(3)">Net Investment Income (M)</th>
+        <th onclick="sortLifeFin(4)">Total Income (M)</th>
+        <th onclick="sortLifeFin(5)">Net Policy Benefits (M)</th>
+        <th onclick="sortLifeFin(6)">Agency Remun. (M)</th>
+        <th onclick="sortLifeFin(7)">Mgmt Exp. (M)</th>
+        <th onclick="sortLifeFin(8)">Total Assets (M)</th>
+        <th onclick="sortLifeFin(9)">Benefit/Prem %</th>
+      </tr></thead>
+      <tbody id="lifeFinBody"></tbody>
+    </table>
+    </div>
+    <p class="note">Benefit/Prem % = Net Policy Benefits ÷ Net Premiums × 100. Higher ratio = more mature/legacy book with higher claims/maturities. Sorted by total assets descending.</p>
+  </div>
+
+  <div class="card" style="margin-top:20px">
+    <h2>Family Takaful — Revenue Account Summary by Company 2024 (RM Million)</h2>
+    <div style="overflow-x:auto">
+    <table class="data-table">
+      <thead><tr>
+        <th>#</th><th>Operator</th>
+        <th>Net Contributions (M)</th>
+        <th>Net Invest. Income (M)</th>
+        <th>Total Income (M)</th>
+        <th>Net Cert. Benefits (M)</th>
+        <th>Mgmt Expenses (M)</th>
+        <th>Fund (Beg. Year, M)</th>
+      </tr></thead>
+      <tbody>
+        <tr><td>1</td><td style="font-weight:600">Etiqa Family Takaful</td><td>2,502.5</td><td>605.8</td><td>16,055.8</td><td>1,626.6</td><td>~800</td><td>12,320.5</td></tr>
+        <tr><td>2</td><td style="font-weight:600">STMKB</td><td>2,461.2</td><td>382.9</td><td>11,181.0</td><td>992.9</td><td>~600</td><td>8,267.0</td></tr>
+        <tr><td>3</td><td style="font-weight:600">PruBSN Takaful</td><td>3,172.6</td><td>222.3</td><td>9,518.6</td><td>1,728.5</td><td>~700</td><td>5,717.7</td></tr>
+        <tr><td>4</td><td style="font-weight:600">AIA Public Takaful</td><td>1,784.9</td><td>140.7</td><td>5,356.4</td><td>926.9</td><td>~400</td><td>3,126.6</td></tr>
+        <tr><td>5</td><td style="font-weight:600">GE Takaful</td><td>1,445.7</td><td>64.5</td><td>5,431.6</td><td>2,823.1</td><td>~500</td><td>2,253.5</td></tr>
+        <tr><td>6</td><td style="font-weight:600">Takaful Ikhlas Family</td><td>576.9</td><td>166.5</td><td>4,716.4</td><td>363.2</td><td>~400</td><td>3,828.6</td></tr>
+        <tr><td>7</td><td style="font-weight:600">Sun Life Malaysia Takaful</td><td>952.6</td><td>97.8</td><td>3,674.6</td><td>345.7</td><td>~350</td><td>2,586.7</td></tr>
+        <tr><td>8</td><td style="font-weight:600">FWD Takaful</td><td>607.0</td><td>72.3</td><td>2,343.8</td><td>316.3</td><td>~200</td><td>1,621.2</td></tr>
+        <tr><td>9</td><td style="font-weight:600">HLM Takaful</td><td>501.1</td><td>57.3</td><td>1,951.1</td><td>105.9</td><td>~250</td><td>1,310.0</td></tr>
+        <tr><td>10</td><td style="font-weight:600">Zurich Takaful Malaysia</td><td>403.7</td><td>30.0</td><td>1,354.6</td><td>211.7</td><td>~200</td><td>812.1</td></tr>
+        <tr><td>11</td><td style="font-weight:600">AmMetLife Takaful</td><td>139.7</td><td>24.1</td><td>701.5</td><td>61.1</td><td>~80</td><td>510.9</td></tr>
+        <tr class="total-row"><td></td><td>Industry Total</td><td>14,547.9</td><td>1,864.3</td><td>62,285.3</td><td>9,501.7</td><td>~4,480</td><td>42,354.7</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+</div>
+
+<!-- TAB: Benefits Paid -->
+<div id="tab-benefits" class="tab-content" style="display:none">
+  <div class="kpi-grid">
+    <div class="kpi li"><div class="kl">Life — Total Net Policy Benefits</div><div class="kv">RM 34,831M</div><div class="ks" style="color:#ef4444">Incl. death, maturity, surrender, others</div></div>
+    <div class="kpi li"><div class="kl">Life — Death Benefits</div><div class="kv">RM 2,022M</div><div class="ks" style="color:#94a3b8">5.8% of total benefits</div></div>
+    <div class="kpi li"><div class="kl">Life — Maturity Benefits</div><div class="kv">RM 5,258M</div><div class="ks" style="color:#94a3b8">15.1% of total benefits</div></div>
+    <div class="kpi li"><div class="kl">Life — Surrender Benefits</div><div class="kv">RM 12,488M</div><div class="ks" style="color:#ef4444">35.8% of total — largest outgo</div></div>
+    <div class="kpi li"><div class="kl">Life — Other Benefits (ILP etc)</div><div class="kv">RM 15,064M</div><div class="ks" style="color:#94a3b8">43.2% (mainly ILP withdrawals)</div></div>
+    <div class="kpi ft"><div class="kl">FT — Total Net Cert. Benefits</div><div class="kv">RM 9,502M</div><div class="ks" style="color:#94a3b8">vs RM 8,453M in 2023 (+12.4%)</div></div>
+    <div class="kpi ft"><div class="kl">FT — Death Benefits</div><div class="kv">RM 868M</div><div class="ks" style="color:#94a3b8">9.1% of total FT benefits</div></div>
+    <div class="kpi ft"><div class="kl">FT — Surrender Benefits</div><div class="kv">RM 2,543M</div><div class="ks" style="color:#ef4444">26.8% of FT total benefits</div></div>
+    <div class="kpi ft"><div class="kl">FT — Other Benefits</div><div class="kv">RM 5,766M</div><div class="ks" style="color:#94a3b8">60.7% mainly ILP unit redemptions</div></div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h2>Life Insurance — Policy Benefits Breakdown 2024</h2>
+      <canvas id="lifeBenefitsChart" height="260"></canvas>
+    </div>
+    <div class="card">
+      <h2>Family Takaful — Certificate Benefits Breakdown 2024</h2>
+      <canvas id="ftBenefitsChart" height="260"></canvas>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px">
+    <h2>Life Insurance — Net Policy Benefits by Company 2024 (RM Million)</h2>
+    <div style="overflow-x:auto">
+    <table class="data-table">
+      <thead><tr><th>#</th><th>Company</th><th>Death (M)</th><th>Maturity (M)</th><th>Surrender (M)</th><th>Others (M)</th><th>Total Benefits (M)</th><th>Agency Remun. (M)</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td style="font-weight:600">AIA Bhd</td><td>534.5</td><td>793.6</td><td>2,804.7</td><td>3,537.7</td><td>7,670.5</td><td>1,433.1</td></tr>
+        <tr><td>2</td><td style="font-weight:600">Great Eastern Life</td><td>596.0</td><td>796.0</td><td>2,800.9</td><td>4,917.8</td><td>9,110.7</td><td>1,400.2</td></tr>
+        <tr><td>3</td><td style="font-weight:600">Prudential Assurance</td><td>287.1</td><td>927.4</td><td>2,201.7</td><td>2,381.8</td><td>5,798.1</td><td>1,062.2</td></tr>
+        <tr><td>4</td><td style="font-weight:600">Allianz Life</td><td>97.0</td><td>171.0</td><td>369.5</td><td>1,708.9</td><td>2,346.4</td><td>511.5</td></tr>
+        <tr><td>5</td><td style="font-weight:600">Hong Leong Assurance</td><td>91.3</td><td>846.4</td><td>896.5</td><td>418.2</td><td>2,252.4</td><td>397.3</td></tr>
+        <tr><td>6</td><td style="font-weight:600">Etiqa Life</td><td>99.8</td><td>764.9</td><td>1,313.7</td><td>190.1</td><td>2,368.5</td><td>115.0</td></tr>
+        <tr><td>7</td><td style="font-weight:600">Tokio Marine Life</td><td>83.6</td><td>304.9</td><td>560.2</td><td>332.2</td><td>1,280.9</td><td>139.9</td></tr>
+        <tr><td>8</td><td style="font-weight:600">Manulife</td><td>28.6</td><td>160.4</td><td>491.2</td><td>236.4</td><td>916.5</td><td>134.5</td></tr>
+        <tr><td>9</td><td style="font-weight:600">Zurich Life</td><td>91.6</td><td>39.4</td><td>232.6</td><td>443.1</td><td>806.7</td><td>111.9</td></tr>
+        <tr><td>10</td><td style="font-weight:600">MCIS Insurance</td><td>35.9</td><td>147.4</td><td>190.2</td><td>332.5</td><td>706.1</td><td>87.7</td></tr>
+        <tr><td>11</td><td style="font-weight:600">AmMetLife</td><td>30.4</td><td>29.0</td><td>82.0</td><td>346.7</td><td>488.0</td><td>61.9</td></tr>
+        <tr><td>12</td><td style="font-weight:600">Sun Life Assurance</td><td>17.8</td><td>46.3</td><td>248.1</td><td>35.5</td><td>347.7</td><td>63.3</td></tr>
+        <tr><td>13</td><td style="font-weight:600">FWD Insurance</td><td>17.3</td><td>200.1</td><td>84.6</td><td>51.1</td><td>353.1</td><td>18.1</td></tr>
+        <tr><td>14</td><td style="font-weight:600">Generali Life</td><td>10.6</td><td>31.1</td><td>212.1</td><td>131.9</td><td>385.7</td><td>50.0</td></tr>
+        <tr class="total-row"><td></td><td>Industry Total</td><td>2,021.7</td><td>5,257.8</td><td>12,487.9</td><td>15,063.9</td><td>34,831.3</td><td>5,586.3</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="note">Others includes ILP fund unit redemptions, disability, critical illness, annuity payments and miscellaneous policy outgo. Source: ISM Statistical Yearbook FY2024.</p>
+  </div>
+</div>
+
+</div><!-- /container -->
+
+<script>
+// ===== CHART ENGINE =====
+function drawStackedBar(id, labels, datasets, opts={}) {
+  const c = document.getElementById(id); if (!c) return;
+  c.width = c.parentElement.offsetWidth || 600;
+  const h = opts.height || 300; c.height = h;
+  const ctx = c.getContext('2d');
+  const pad = {t:20, r:20, b:opts.bpad||50, l:opts.lpad||65};
+  const W = c.width, H = h, iW = W-pad.l-pad.r, iH = H-pad.t-pad.b;
+  ctx.clearRect(0,0,W,H);
+  const totals = labels.map((_,i) => datasets.reduce((s,d) => s + (d.data[i]||0), 0));
+  const maxV = Math.max(...totals) * 1.08 || 1;
+  const bW = Math.min(iW / labels.length * 0.65, 55);
+  function toY(v){ return pad.t + iH - v/maxV*iH; }
+  ctx.strokeStyle='#1e2535'; ctx.lineWidth=1;
+  for(let i=0; i<=5; i++){
+    const v = maxV/5*i; const y = toY(v);
+    ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(W-pad.r, y); ctx.stroke();
+    ctx.fillStyle='#475569'; ctx.font='10px system-ui'; ctx.textAlign='right';
+    const s = v>=1000 ? (v/1000).toFixed(1)+'k' : Math.round(v).toString();
+    ctx.fillText(s, pad.l-4, y+3);
+  }
+  labels.forEach((label,gi) => {
+    let acc = 0;
+    const x = pad.l + gi*(iW/labels.length) + (iW/labels.length - bW)/2;
+    datasets.forEach(ds => {
+      const v = ds.data[gi] || 0;
+      ctx.fillStyle = ds.color;
+      ctx.fillRect(x, toY(acc+v), bW, v/maxV*iH);
+      acc += v;
+    });
+    ctx.fillStyle='#64748b'; ctx.font='10px system-ui'; ctx.textAlign='center';
+    const lines = label.split('\n');
+    lines.forEach((ln,li) => ctx.fillText(ln, x+bW/2, H-pad.b+14+li*12));
+  });
+}
+
+function drawGroupedBar(id, labels, datasets, opts={}) {
+  const c = document.getElementById(id); if (!c) return;
+  c.width = c.parentElement.offsetWidth || 600;
+  const h = opts.height || 300; c.height = h;
+  const ctx = c.getContext('2d');
+  const pad = {t:20, r:20, b:opts.bpad||50, l:opts.lpad||70};
+  const W = c.width, H = h, iW = W-pad.l-pad.r, iH = H-pad.t-pad.b;
+  ctx.clearRect(0,0,W,H);
+  const n = labels.length, ns = datasets.length;
+  const allV = datasets.flatMap(d=>d.data);
+  const maxV = Math.max(...allV)*1.08||1, minV = Math.min(0,...allV);
+  const range = maxV-minV;
+  const gW = iW/n, bW = Math.min(gW/ns*0.82, opts.maxBW||45);
+  function toY(v){ return pad.t + iH - (v-minV)/range*iH; }
+  ctx.strokeStyle='#1e2535'; ctx.lineWidth=1;
+  for(let i=0; i<=5; i++){
+    const v = minV+range/5*i; const y = toY(v);
+    ctx.beginPath(); ctx.moveTo(pad.l,y); ctx.lineTo(W-pad.r,y); ctx.stroke();
+    ctx.fillStyle='#475569'; ctx.font='10px system-ui'; ctx.textAlign='right';
+    ctx.fillText(opts.yFmt ? opts.yFmt(v) : Math.round(v).toLocaleString(), pad.l-4, y+3);
+  }
+  datasets.forEach((ds,si) => {
+    ctx.fillStyle = ds.color;
+    ds.data.forEach((v,gi) => {
+      const x = pad.l + gi*gW + si*(bW+1) + (gW - ns*(bW+1))/2;
+      const y0 = toY(0), y1 = toY(v);
+      ctx.fillRect(x, Math.min(y0,y1), bW, Math.abs(y1-y0));
+    });
+  });
+  ctx.fillStyle='#64748b'; ctx.font='10px system-ui'; ctx.textAlign='center';
+  labels.forEach((l,i) => {
+    const x = pad.l + i*gW + gW/2;
+    const lines = l.split('\n');
+    lines.forEach((ln,li) => ctx.fillText(ln, x, H-pad.b+14+li*12));
+  });
+}
+
+function drawLineChart(id, labels, datasets, opts={}) {
+  const c = document.getElementById(id); if (!c) return;
+  c.width = c.parentElement.offsetWidth || 600;
+  const h = opts.height || 260; c.height = h;
+  const ctx = c.getContext('2d');
+  const pad = {t:20, r:20, b:40, l:opts.lpad||60};
+  const W = c.width, H = h, iW = W-pad.l-pad.r, iH = H-pad.t-pad.b;
+  ctx.clearRect(0,0,W,H);
+  const allV = datasets.flatMap(d=>d.data.filter(v=>v!==null));
+  const minV = Math.min(...allV)*0.92, maxV = Math.max(...allV)*1.08;
+  const range = maxV-minV||1;
+  function toX(i){ return pad.l + i*(iW/(labels.length-1)); }
+  function toY(v){ return pad.t + iH - (v-minV)/range*iH; }
+  ctx.strokeStyle='#1e2535'; ctx.lineWidth=1;
+  for(let i=0;i<=5;i++){
+    const v=minV+range/5*i; const y=toY(v);
+    ctx.beginPath(); ctx.moveTo(pad.l,y); ctx.lineTo(W-pad.r,y); ctx.stroke();
+    ctx.fillStyle='#475569'; ctx.font='10px system-ui'; ctx.textAlign='right';
+    const s = v>=1000 ? (v/1000).toFixed(1)+'k' : v.toFixed(0);
+    ctx.fillText(s, pad.l-4, y+3);
+  }
+  ctx.fillStyle='#64748b'; ctx.font='10px system-ui'; ctx.textAlign='center';
+  labels.forEach((l,i) => ctx.fillText(l, toX(i), H-8));
+  datasets.forEach(ds => {
+    ctx.strokeStyle = ds.color; ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    let started = false;
+    ds.data.forEach((v,i) => {
+      if(v===null) return;
+      if(!started){ ctx.moveTo(toX(i),toY(v)); started=true; } else ctx.lineTo(toX(i),toY(v));
+    });
+    ctx.stroke();
+    ctx.fillStyle = ds.color;
+    ds.data.forEach((v,i) => {
+      if(v===null) return;
+      ctx.beginPath(); ctx.arc(toX(i),toY(v),3.5,0,Math.PI*2); ctx.fill();
+    });
+  });
+}
+
+function drawDonut(id, segments, opts={}) {
+  const c = document.getElementById(id); if (!c) return;
+  const size = opts.size || 220;
+  c.width = size; c.height = size;
+  const ctx = c.getContext('2d');
+  const cx = size/2, cy = size/2, r = size*0.42, inner = r*0.55;
+  const total = segments.reduce((s,seg)=>s+seg.v,0);
+  let angle = -Math.PI/2;
+  segments.forEach(seg => {
+    const sweep = (seg.v/total)*Math.PI*2;
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);
+    ctx.arc(cx,cy,r,angle,angle+sweep);
+    ctx.closePath();
+    ctx.fillStyle = seg.color;
+    ctx.fill();
+    angle += sweep;
+  });
+  // inner circle
+  ctx.beginPath(); ctx.arc(cx,cy,inner,0,Math.PI*2);
+  ctx.fillStyle = '#1a1d2e'; ctx.fill();
+  if(opts.label){
+    ctx.fillStyle='#f1f5f9'; ctx.font='bold 13px system-ui'; ctx.textAlign='center';
+    ctx.fillText(opts.label, cx, cy+4);
+  }
+}
+
+// ===== DATA =====
+const YEARS6 = ['2019','2020','2021','2022','2023','2024'];
+const YEARS5 = ['2020','2021','2022','2023','2024'];
+
+// Life new business by plan type (RM M)
+const lifeIndOrdinary = [2,215, 2,048, 1,886, 2,157, 2,092, 1,866].filter((_,i)=>i<6);
+// Fix above array properly:
+const lifeIOL = [2215, 2048, 1886, 2157, 2092, 1866];
+const lifeGOL = [4065, 3952, 4150, 4960, 5060, 5619];
+const lifeILP = [4223, 3974, 4425, 4626, 6156, 7611];
+const lifeAnn  = [70, 50, 60, 70, 70, 80];
+
+const ftIOF = [1200, 1306, 1498, 2163, 3332, 3591];
+const ftGOF = [4200, 3882, 5772, 7238, 5575, 5163];
+const ftILP = [700,  1210, 499,  330,  814,  999];
+
+// Life products trend (RM M) — approximate annual figure
+const lpWholeLife = [3500, 3100, 3200, 3001, 3840, 4840];
+const lpEndow     = [3600, 3400, 3500, 3790, 3830, 4020];
+const lpTemp      = [2600, 2000, 2100, 2170, 2430, 2520];
+const lpMH        = [1900, 1600, 1800, 1880, 2230, 2630];
+const lpOther     = [400,  390,  350,  270,  280,  260];
+
+// FT products trend
+const ftpTemp = [2600, 2800, 3100, 3500, 5580, 5660];
+const ftpEnd  = [1400, 1500, 1600, 1720, 1830, 1860];
+const ftpMH   = [750,  700,  1100,  820,  540,  400];
+const ftpRid  = [600,  550,  580,  620,  630,  625];
+
+// Life in-force policies (million) — approximate
+const lifePoliciesTrend = [13.1, 13.2, 13.3, 13.4, 13.3, 12.953];
+// FT certs in-force (million)
+const ftCertsTrend = [5.510, 6.073, 6.627, 6.627, 6.601, 6.686];
+
+// Life company data
+const LIFE_CO = [
+  {n:'AIA Bhd',            nep:10170, nii:2462,  income:68054, benefits:7671, agency:1433, me:1132, assets:68276, fy:'31-Dec-24'},
+  {n:'Great Eastern Life', nep:10192, nii:3852,  income:96334, benefits:9111, agency:1400, me:683,  assets:101472,fy:'31-Dec-24'},
+  {n:'Prudential Assurance',nep:8708, nii:1825,  income:56458, benefits:5798, agency:1062, me:877,  assets:52024, fy:'31-Dec-24'},
+  {n:'Allianz Life',       nep:3657,  nii:738,   income:20845, benefits:2346, agency:512,  me:357,  assets:19975, fy:'31-Dec-24'},
+  {n:'Etiqa Life',         nep:2224,  nii:552,   income:15763, benefits:2368, agency:115,  me:181,  assets:13870, fy:'31-Dec-24'},
+  {n:'Hong Leong Assurance',nep:2910, nii:1051,  income:25415, benefits:2252, agency:397,  me:206,  assets:27305, fy:'30-Jun-24'},
+  {n:'Tokio Marine Life',  nep:1771,  nii:424,   income:12281, benefits:1281, agency:140,  me:161,  assets:12165, fy:'31-Dec-24'},
+  {n:'Manulife',           nep:1238,  nii:247,   income:6616,  benefits:917,  agency:134,  me:203,  assets:6537,  fy:'31-Dec-24'},
+  {n:'Zurich Life',        nep:809,   nii:292,   income:6397,  benefits:807,  agency:112,  me:116,  assets:7349,  fy:'31-Dec-24'},
+  {n:'MCIS Insurance',     nep:707,   nii:170,   income:4856,  benefits:706,  agency:88,   me:158,  assets:4331,  fy:'31-Dec-24'},
+  {n:'FWD Insurance',      nep:183,   nii:239,   income:2046,  benefits:353,  agency:18,   me:147,  assets:1893,  fy:'31-Dec-24'},
+  {n:'Generali Life',      nep:503,   nii:110,   income:3024,  benefits:386,  agency:50,   me:127,  assets:2879,  fy:'31-Dec-24'},
+  {n:'AmMetLife',          nep:794,   nii:175,   income:4426,  benefits:488,  agency:62,   me:142,  assets:4368,  fy:'31-Mar-24'},
+  {n:'Sun Life Assurance', nep:636,   nii:120,   income:3711,  benefits:348,  agency:63,   me:160,  assets:3309,  fy:'31-Dec-24'},
+];
+
+const FT_CO = [
+  {n:'AIA Public Takaful',  nep:1785, benefits:927,  assets:null, fy:'31-Dec-24'},
+  {n:'AmMetLife Takaful',   nep:140,  benefits:61,   assets:null, fy:'31-Mar-24'},
+  {n:'Etiqa Family Takaful',nep:2503, benefits:1627, assets:null, fy:'31-Dec-24'},
+  {n:'FWD Takaful',         nep:607,  benefits:316,  assets:null, fy:'31-Dec-24'},
+  {n:'GE Takaful',          nep:1446, benefits:2823, assets:null, fy:'31-Dec-24'},
+  {n:'HLM Takaful',         nep:501,  benefits:106,  assets:null, fy:'30-Jun-24'},
+  {n:'PruBSN Takaful',      nep:3173, benefits:1729, assets:null, fy:'31-Dec-24'},
+  {n:'Sun Life Takaful',    nep:953,  benefits:346,  assets:null, fy:'31-Dec-24'},
+  {n:'STMKB',               nep:2461, benefits:993,  assets:null, fy:'31-Dec-24'},
+  {n:'Takaful Ikhlas Family',nep:577, benefits:363,  assets:null, fy:'31-Mar-24'},
+  {n:'Zurich Takaful',      nep:404,  benefits:212,  assets:null, fy:'31-Dec-24'},
+];
+
+let allCompFilter = 'all', lifeFinSort = {col:8, dir:-1};
+let allCompSort = {col:3, dir:-1};
+
+// ===== TAB SWITCHER =====
+function showTab(name, btn){
+  document.querySelectorAll('.tab-content').forEach(t => t.style.display='none');
+  document.querySelectorAll('.tabs .tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-'+name).style.display = 'block';
+  btn.classList.add('active');
+  const init = {
+    overview: initOverview, companies: initCompanies,
+    products: initProducts, policies: initPolicies,
+    financials: initFinancials, benefits: initBenefits
+  };
+  if(!window['_inited_'+name]){ window['_inited_'+name]=true; init[name](); }
+}
+
+// ===== OVERVIEW =====
+function initOverview(){
+  drawStackedBar('lifeNewBizChart', YEARS6,
+    [{data:lifeIOL,color:'#8b5cf6'},{data:lifeGOL,color:'#3b82f6'},
+     {data:lifeILP,color:'#06b6d4'},{data:lifeAnn,color:'#f59e0b'}],
+    {height:280,lpad:65});
+  drawStackedBar('ftNewBizChart', YEARS6,
+    [{data:ftIOF,color:'#f59e0b'},{data:ftGOF,color:'#ef4444'},{data:ftILP,color:'#fbbf24'}],
+    {height:280,lpad:65});
+  renderProductBars('lifeProductBars', [
+    {n:'Whole Life',v:4840,yoy:26.0,share:32.1,col:'#8b5cf6'},
+    {n:'Endowment',v:4020,yoy:5.0,share:26.6,col:'#3b82f6'},
+    {n:'Medical & Health',v:2630,yoy:16.2,share:17.4,col:'#10b981'},
+    {n:'Temporary',v:2520,yoy:4.8,share:16.7,col:'#06b6d4'},
+    {n:'Riders',v:748,yoy:10.0,share:5.0,col:'#a78bfa'},
+    {n:'Other Plans',v:260,yoy:-7.1,share:1.7,col:'#475569'},
+    {n:'Annuity',v:80,yoy:14.3,share:0.5,col:'#f59e0b'},
+  ], 15097);
+  renderProductBars('ftProductBars',[
+    {n:'Temporary Plans',v:5660,yoy:1.4,share:58.1,col:'#f59e0b'},
+    {n:'Endowment',v:1860,yoy:7.5,share:19.1,col:'#ef4444'},
+    {n:'Medical & Health',v:400,yoy:-26.3,share:4.1,col:'#fbbf24'},
+    {n:'Riders',v:625,yoy:2.0,share:6.4,col:'#fb923c'},
+    {n:'Other Plans',v:390,yoy:-13.5,share:4.0,col:'#475569'},
+  ], 9732);
+}
+
+function renderProductBars(elId, data, total){
+  const el = document.getElementById(elId);
+  el.innerHTML = data.map(d => {
+    const col = d.yoy >= 10 ? '#22c55e' : d.yoy >= 0 ? '#fbbf24' : '#ef4444';
+    return `<div style="margin:5px 0">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">
+        <span style="font-size:12px;color:#f1f5f9;font-weight:500">${d.n}</span>
+        <span style="font-size:11px">
+          <strong style="color:#e2e8f0">${(d.v/1000).toFixed(1)}B</strong>
+          <span style="color:${col};margin-left:6px">${d.yoy>0?'+':''}${d.yoy.toFixed(1)}% YoY</span>
+          <span style="color:#475569;margin-left:6px">${d.share}%</span>
+        </span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${d.share}%;background:${d.col}"></div></div>
+    </div>`;
+  }).join('');
+}
+
+// ===== COMPANIES =====
+function initCompanies(){
+  const lifeSorted = [...LIFE_CO].sort((a,b)=>b.nep-a.nep);
+  const ftSorted = [...FT_CO].sort((a,b)=>b.nep-a.nep);
+  drawGroupedBar('lifeCompChart', lifeSorted.map(c=>c.n.replace('Assurance','Ass.').replace('Insurance','Ins.').replace('Life','')),
+    [{data:lifeSorted.map(c=>c.nep),color:'#8b5cf6'}],
+    {height:440,lpad:65,maxBW:28,yFmt:v=>v>=1000?(v/1000).toFixed(0)+'k':Math.round(v)});
+  drawGroupedBar('ftCompChart', ftSorted.map(c=>c.n.replace('Takaful','Tak.').replace('Malaysia','')),
+    [{data:ftSorted.map(c=>c.nep),color:'#f59e0b'}],
+    {height:340,lpad:65,maxBW:28,yFmt:v=>v>=1000?(v/1000).toFixed(0)+'k':Math.round(v)});
+  renderAllCompTable();
+}
+
+function showCompSeg(seg){
+  allCompFilter = seg;
+  ['li','ft','all'].forEach(s=>{
+    const el = document.getElementById('show'+(s==='li'?'Life':s==='ft'?'FT':'All')+'Btn');
+    if(el) el.classList.toggle('active', seg===s);
+  });
+  renderAllCompTable();
+}
+
+function sortAllComp(col){
+  if(allCompSort.col===col) allCompSort.dir*=-1; else{allCompSort.col=col;allCompSort.dir=-1;}
+  renderAllCompTable();
+}
+
+function renderAllCompTable(){
+  const lifeRows = LIFE_CO.map(c=>({...c,seg:'LI',benefitRatio:(c.benefits/c.nep*100).toFixed(1)}));
+  const ftRows   = FT_CO.map(c=>({...c,seg:'FT',assets:null,agency:null,me:null,income:null,nii:null,benefitRatio:(c.benefits/c.nep*100).toFixed(1)}));
+  let rows = allCompFilter==='li' ? lifeRows : allCompFilter==='ft' ? ftRows : [...lifeRows,...ftRows];
+  const col = allCompSort.col;
+  rows.sort((a,b)=>{
+    const keys=[null,'n','seg','nep','benefits','benefitRatio','agency','me','assets','fy'];
+    const k=keys[col]; if(!k)return 0;
+    const av=a[k], bv=b[k];
+    if(av===null&&bv===null)return 0; if(av===null)return 1; if(bv===null)return -1;
+    if(typeof av==='string') return allCompSort.dir*av.localeCompare(bv);
+    return allCompSort.dir*(av-bv);
+  });
+  const tbody = document.getElementById('allCompBody');
+  tbody.innerHTML = rows.map((r,i)=>{
+    const segChip = r.seg==='LI'?'<span style="background:#3b1f6e;color:#c084fc;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:700">LI</span>':'<span style="background:#78350f;color:#fbbf24;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:700">FT</span>';
+    const brPct = parseFloat(r.benefitRatio);
+    const brCol = brPct>100?'#ef4444':brPct>70?'#fbbf24':'#22c55e';
+    const fmt = (v,d=0)=>v===null||v===undefined?'—':v.toLocaleString('en-MY',{minimumFractionDigits:d,maximumFractionDigits:d});
+    return `<tr class="seg-${r.seg.toLowerCase()}">
+      <td><span class="rank">${i+1}</span></td>
+      <td style="font-weight:600;color:#f1f5f9">${r.n}</td>
+      <td>${segChip}</td>
+      <td>${fmt(r.nep)}</td>
+      <td>${fmt(r.benefits)}</td>
+      <td><span style="color:${brCol};font-weight:600">${r.benefitRatio}%</span></td>
+      <td>${fmt(r.agency)}</td>
+      <td>${fmt(r.me)}</td>
+      <td>${r.assets?fmt(r.assets):'—'}</td>
+      <td style="color:#64748b;font-size:11px">${r.fy}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ===== PRODUCTS =====
+function initProducts(){
+  renderPlanMix('lifePlanMix',[
+    {n:'Investment-Linked',share:50.4,col:'#06b6d4',yoy:'▲ 23.6%'},
+    {n:'Group Ordinary Life',share:37.2,col:'#3b82f6',yoy:'▲ 11.1%'},
+    {n:'Individual Ordinary Life',share:12.4,col:'#8b5cf6',yoy:'▼ –10.8%'},
+  ]);
+  renderPlanMix('ftPlanMix',[
+    {n:'Group Ordinary Family',share:52.4,col:'#ef4444',yoy:'▼ –6.9%'},
+    {n:'Individual Ordinary Family',share:37.1,col:'#f59e0b',yoy:'▲ +9.5%'},
+    {n:'Investment-Linked',share:10.5,col:'#fbbf24',yoy:'▲ +25.8%'},
+  ]);
+  drawStackedBar('lifePlanTrendChart',['2022','2023','2024'],[
+    {data:[4960,5060,5619],color:'#3b82f6'},
+    {data:[4626,6156,7611],color:'#06b6d4'},
+    {data:[2157,2092,1866],color:'#8b5cf6'},
+  ],{height:220,lpad:55});
+  drawStackedBar('ftPlanTrendChart',['2022','2023','2024'],[
+    {data:[7238,5575,5163],color:'#ef4444'},
+    {data:[2163,3332,3591],color:'#f59e0b'},
+    {data:[330,814,999],color:'#fbbf24'},
+  ],{height:220,lpad:55});
+  drawStackedBar('lifeProductTrendChart',YEARS6,[
+    {data:lpWholeLife,color:'#8b5cf6'},
+    {data:lpEndow,color:'#3b82f6'},
+    {data:lpTemp,color:'#06b6d4'},
+    {data:lpMH,color:'#10b981'},
+    {data:lpOther,color:'#475569'},
+  ],{height:280,lpad:65});
+  drawStackedBar('ftProductTrendChart',YEARS6,[
+    {data:ftpTemp,color:'#f59e0b'},
+    {data:ftpEnd,color:'#ef4444'},
+    {data:ftpMH,color:'#fbbf24'},
+    {data:ftpRid,color:'#fb923c'},
+  ],{height:280,lpad:65});
+}
+
+function renderPlanMix(elId, data){
+  const el = document.getElementById(elId);
+  el.innerHTML = data.map(d=>`
+    <div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">
+        <span style="font-size:13px;color:#f1f5f9;font-weight:500">${d.n}</span>
+        <span style="font-size:12px;font-weight:700;color:#f1f5f9">${d.share}%
+          <span style="font-size:10px;color:${d.yoy.includes('▲')?'#22c55e':'#ef4444'};margin-left:6px">${d.yoy}</span>
+        </span>
+      </div>
+      <div class="progress-bar" style="height:10px">
+        <div class="progress-fill" style="width:${d.share}%;background:${d.col}"></div>
+      </div>
+    </div>`).join('');
+}
+
+// ===== POLICIES =====
+function initPolicies(){
+  renderInForce('lifePoliciesInForce',[
+    {n:'Individual Ordinary Life',v:5.63,col:'#8b5cf6'},
+    {n:'Group Ordinary Life',v:1.80,col:'#3b82f6'},
+    {n:'Investment-Linked (Individual)',v:5.52,col:'#06b6d4'},
+  ],12.953,'M Policies');
+  renderInForce('ftCertsInForce',[
+    {n:'Individual Ordinary Family',v:4.791,col:'#f59e0b'},
+    {n:'Investment-Linked',v:1.354,col:'#fbbf24'},
+    {n:'Group Ordinary Family',v:0.521,col:'#ef4444'},
+    {n:'Annuity',v:0.019,col:'#fb923c'},
+  ],6.686,'M Certs');
+  drawLineChart('lifePoliciesTrendChart',YEARS5,[{data:lifePoliciesTrend.slice(1),color:'#8b5cf6'}],{height:240,lpad:55,yFmt:v=>v.toFixed(1)+'M'});
+  drawLineChart('ftCertsTrendChart',YEARS5,[{data:ftCertsTrend.slice(1),color:'#f59e0b'}],{height:240,lpad:55,yFmt:v=>v.toFixed(2)+'M'});
+}
+
+function renderInForce(elId, data, total, unit){
+  const el = document.getElementById(elId);
+  el.innerHTML=`<div style="font-size:11px;color:#64748b;margin-bottom:8px">Total in-force: <strong style="color:#f1f5f9;font-size:16px">${total} ${unit}</strong></div>`+
+  data.map(d=>{
+    const pct=(d.v/total*100).toFixed(1);
+    return `<div style="margin:7px 0">
+      <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+        <span style="font-size:12px;color:#94a3b8">${d.n}</span>
+        <span style="font-size:13px;font-weight:600;color:#f1f5f9">${d.v}M <span style="font-size:11px;color:#64748b">(${pct}%)</span></span>
+      </div>
+      <div class="progress-bar" style="height:10px">
+        <div class="progress-fill" style="width:${pct}%;background:${d.col}"></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ===== FINANCIALS =====
+function initFinancials(){
+  const sorted = [...LIFE_CO].sort((a,b)=>b.assets-a.assets);
+  drawGroupedBar('lifeAssetsChart', sorted.map(c=>c.n.replace(' Assurance','').replace(' Insurance','').replace(' Life','')),
+    [{data:sorted.map(c=>c.assets),color:'#8b5cf6'}],
+    {height:360,lpad:65,maxBW:28,yFmt:v=>v>=1000?(v/1000).toFixed(0)+'k':Math.round(v)});
+  renderLifeFinTable();
+}
+
+function sortLifeFin(col){
+  if(lifeFinSort.col===col) lifeFinSort.dir*=-1; else{lifeFinSort.col=col;lifeFinSort.dir=-1;}
+  renderLifeFinTable();
+}
+
+function renderLifeFinTable(){
+  const keys=[null,'n','nep','nii','income','benefits','agency','me','assets','_br'];
+  const data = LIFE_CO.map(c=>({...c,_br:(c.benefits/c.nep*100)}));
+  data.sort((a,b)=>{
+    const k=keys[lifeFinSort.col]; if(!k)return 0;
+    const av=a[k],bv=b[k];
+    if(av===null)return 1; if(bv===null)return -1;
+    if(typeof av==='string')return lifeFinSort.dir*av.localeCompare(bv);
+    return lifeFinSort.dir*(av-bv);
+  });
+  const tbody = document.getElementById('lifeFinBody');
+  const fmt=(v,d=0)=>v===null?'—':v.toLocaleString('en-MY',{minimumFractionDigits:d,maximumFractionDigits:d});
+  tbody.innerHTML = data.map((c,i)=>{
+    const brCol = c._br>100?'#ef4444':c._br>70?'#fbbf24':'#22c55e';
+    return `<tr><td><span class="rank">${i+1}</span></td>
+      <td style="font-weight:600;color:#f1f5f9">${c.n}</td>
+      <td>${fmt(c.nep)}</td><td>${fmt(c.nii)}</td><td>${fmt(c.income)}</td>
+      <td>${fmt(c.benefits)}</td><td>${fmt(c.agency)}</td><td>${fmt(c.me)}</td>
+      <td>${fmt(c.assets)}</td>
+      <td><span style="color:${brCol};font-weight:600">${c._br.toFixed(1)}%</span></td>
+    </tr>`;
+  }).join('');
+  const tot=document.createElement('tr'); tot.classList.add('total-row');
+  const ts=(k)=>data.reduce((s,c)=>s+(c[k]||0),0);
+  const totBR=(ts('benefits')/ts('nep')*100).toFixed(1);
+  tot.innerHTML=`<td></td><td>Industry Total</td>
+    <td>${fmt(ts('nep'))}</td><td>${fmt(ts('nii'))}</td><td>${fmt(ts('income'))}</td>
+    <td>${fmt(ts('benefits'))}</td><td>${fmt(ts('agency'))}</td><td>${fmt(ts('me'))}</td>
+    <td>${fmt(ts('assets'))}</td>
+    <td style="color:#fbbf24;font-weight:600">${totBR}%</td>`;
+  tbody.appendChild(tot);
+}
+
+// ===== BENEFITS =====
+function initBenefits(){
+  drawGroupedBar('lifeBenefitsChart',['Death','Maturity','Surrender','Others'],[
+    {data:[2022,5258,12488,15064],color:'#8b5cf6'}
+  ],{height:260,lpad:65,yFmt:v=>v>=1000?(v/1000).toFixed(0)+'k':Math.round(v)});
+  drawGroupedBar('ftBenefitsChart',['Death','Maturity','Surrender','Others'],[
+    {data:[868,325,2543,5766],color:'#f59e0b'}
+  ],{height:260,lpad:65,yFmt:v=>v>=1000?(v/1000).toFixed(1)+'k':Math.round(v)});
+}
+
+// ===== INIT FIRST TAB =====
+initOverview();
+</script>
+</body>
+</html>

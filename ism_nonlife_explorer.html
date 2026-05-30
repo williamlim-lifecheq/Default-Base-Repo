@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ISM Non-Life Explorer – FY2024</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0d1117;color:#e2e8f0;font-family:'Segoe UI',system-ui,sans-serif;font-size:14px;line-height:1.5}
+::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-track{background:#1a1d2e}::-webkit-scrollbar-thumb{background:#4f8ef7;border-radius:3px}
+.page-header{background:linear-gradient(135deg,#1e2d5a 0%,#1a1d2e 100%);padding:20px 28px;border-bottom:1px solid #2d3248;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+h1{font-size:22px;font-weight:700;color:#f8fafc}
+h2{font-size:15px;font-weight:600;color:#cbd5e1;margin-bottom:12px;text-transform:uppercase;letter-spacing:.5px}
+h3{font-size:12px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+.subtitle{color:#94a3b8;font-size:12px;margin-top:4px}
+.badge{background:#1e3a8a;color:#93c5fd;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600}
+.container{max-width:1700px;margin:0 auto;padding:20px}
+.section{margin-bottom:28px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+@media(max-width:1000px){.grid-2,.grid-3{grid-template-columns:1fr}}
+.card{background:#1a1d2e;border:1px solid #2d3248;border-radius:12px;padding:18px 20px}
+.tabs{display:flex;gap:4px;margin-bottom:20px;background:#0d1117;border:1px solid #2d3248;border-radius:8px;padding:4px;flex-wrap:wrap}
+.tab{padding:7px 16px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;color:#94a3b8;transition:.15s;border:none;background:transparent;text-transform:uppercase;letter-spacing:.3px}
+.tab.active{background:#1e3a8a;color:#93c5fd}
+.tab:hover:not(.active){background:#1a1d2e;color:#e2e8f0}
+canvas{display:block;max-width:100%;width:100%}
+.legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:#94a3b8}
+.legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.data-table{width:100%;border-collapse:collapse}
+.data-table th{background:#0d1117;color:#64748b;font-size:10px;text-transform:uppercase;letter-spacing:.5px;padding:7px 10px;text-align:right;border-bottom:1px solid #2d3248;font-weight:700;cursor:pointer}
+.data-table th:first-child{text-align:left}
+.data-table th:hover{color:#93c5fd}
+.data-table td{padding:8px 10px;border-bottom:1px solid #1e2535;font-size:12px;text-align:right;color:#cbd5e1}
+.data-table td:first-child{text-align:left;color:#f1f5f9;font-weight:500;font-size:12px}
+.data-table tr:last-child.total-row td{background:#1e2535;color:#fff;font-weight:700;border-bottom:none}
+.data-table tr:hover td{background:#1e2535}
+.pct-good{color:#22c55e;font-weight:600}
+.pct-warn{color:#fbbf24;font-weight:600}
+.pct-bad{color:#ef4444;font-weight:600}
+.bar-h{display:inline-block;height:7px;border-radius:2px;vertical-align:middle;margin-left:4px}
+.chip{display:inline-block;padding:1px 6px;border-radius:6px;font-size:10px;font-weight:700}
+.chip-blue{background:#1e3a8a;color:#93c5fd}
+.chip-green{background:#064e3b;color:#34d399}
+.chip-up{background:#064e3b;color:#34d399}
+.chip-down{background:#7f1d1d;color:#fca5a5}
+.kpi-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.kpi{background:#1a1d2e;border:1px solid #2d3248;border-radius:8px;padding:12px 16px;flex:1;min-width:160px}
+.kv{font-size:20px;font-weight:700;color:#f1f5f9;letter-spacing:-.5px}
+.kl{font-size:11px;color:#64748b;margin-bottom:2px}
+.ks{font-size:11px;margin-top:2px;font-weight:600}
+.toggle-wrap{display:flex;gap:8px;margin-bottom:12px;align-items:center}
+.toggle-wrap label{font-size:12px;color:#94a3b8}
+.toggle-wrap select{background:#0d1117;border:1px solid #2d3248;border-radius:5px;padding:5px 8px;color:#e2e8f0;font-size:12px}
+.note{font-size:10px;color:#475569;margin-top:10px;font-style:italic}
+.rank-num{background:#1e2535;border-radius:3px;padding:1px 4px;font-size:10px;color:#64748b;font-weight:700;margin-right:4px}
+</style>
+</head>
+<body>
+<div class="page-header">
+  <div>
+    <h1>Non-Life Deep Dive — General Insurance &amp; Takaful</h1>
+    <div class="subtitle">Combined analysis of 19 General Insurers + 4 General Takaful Operators · FY 2024 · RM Million</div>
+  </div>
+  <span class="badge">FY 2024</span>
+</div>
+
+<div class="container">
+
+<!-- KPI Summary -->
+<div class="kpi-row">
+  <div class="kpi"><div class="kl">Combined Market (GWP+GWC)</div><div class="kv">RM 28,965M</div><div class="ks" style="color:#22c55e">▲ 7.3% vs 2023</div></div>
+  <div class="kpi"><div class="kl">General Insurance GWP</div><div class="kv">RM 23,053M</div><div class="ks" style="color:#22c55e">▲ 6.9%</div></div>
+  <div class="kpi"><div class="kl">General Takaful GWC</div><div class="kv">RM 5,912M</div><div class="ks" style="color:#22c55e">▲ 8.5%</div></div>
+  <div class="kpi"><div class="kl">GI Net Earned Premiums</div><div class="kv">RM 15,593M</div><div class="ks" style="color:#22c55e">▲ 6.3%</div></div>
+  <div class="kpi"><div class="kl">GT Net Earned Contributions</div><div class="kv">RM 4,246M</div><div class="ks" style="color:#22c55e">▲ 13.7%</div></div>
+  <div class="kpi"><div class="kl">Total Net Claims Incurred</div><div class="kv">RM 11,690M</div><div class="ks" style="color:#ef4444">▲ 9.2% vs 2023</div></div>
+  <div class="kpi"><div class="kl">GI Combined Ratio</div><div class="kv" style="color:#22c55e">93.1%</div><div class="ks" style="color:#ef4444">▲ +5.3pp vs 2023</div></div>
+  <div class="kpi"><div class="kl">GT Combined Ratio</div><div class="kv" style="color:#fbbf24">101.5%</div><div class="ks" style="color:#22c55e">▼ –3.7pp vs 2023</div></div>
+</div>
+
+<!-- Tabs -->
+<div class="tabs">
+  <button class="tab active" onclick="showTab('lob',this)">Lines of Business</button>
+  <button class="tab" onclick="showTab('company',this)">Company Premiums</button>
+  <button class="tab" onclick="showTab('claims',this)">Claims Analysis</button>
+  <button class="tab" onclick="showTab('motor',this)">Motor Deep Dive</button>
+  <button class="tab" onclick="showTab('reinsurance',this)">Reinsurance</button>
+  <button class="tab" onclick="showTab('ratios',this)">Key Ratios History</button>
+</div>
+
+<!-- TAB: Lines of Business -->
+<div id="tab-lob" class="tab-content">
+  <div class="grid-2">
+    <div class="card">
+      <h2>GI — Net Premiums by Line of Business 2024 (RM M)</h2>
+      <div style="overflow-x:auto">
+      <table class="data-table" id="giLobTable">
+        <thead><tr>
+          <th onclick="sortLOB('gi',0)">Line of Business</th>
+          <th onclick="sortLOB('gi',1)">Net Premiums</th>
+          <th onclick="sortLOB('gi',2)">Share %</th>
+          <th onclick="sortLOB('gi',3)">NCI Ratio 2024</th>
+          <th onclick="sortLOB('gi',4)">NCI Ratio 2023</th>
+          <th onclick="sortLOB('gi',5)">Chg (pp)</th>
+        </tr></thead>
+        <tbody id="giLobBody"></tbody>
+      </table>
+      </div>
+    </div>
+    <div class="card">
+      <h2>GT — Net Contributions by Line of Business 2024 (RM M)</h2>
+      <div style="overflow-x:auto">
+      <table class="data-table" id="gtLobTable">
+        <thead><tr>
+          <th onclick="sortLOB('gt',0)">Line of Business</th>
+          <th onclick="sortLOB('gt',1)">Net Contributions</th>
+          <th onclick="sortLOB('gt',2)">Share %</th>
+          <th onclick="sortLOB('gt',3)">NCI Ratio 2024</th>
+          <th onclick="sortLOB('gt',4)">NCI Ratio 2023</th>
+          <th onclick="sortLOB('gt',5)">Chg (pp)</th>
+        </tr></thead>
+        <tbody id="gtLobBody"></tbody>
+      </table>
+      </div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:20px">
+    <h2>Combined Non-Life — Net Premiums/Contributions by LOB (RM M)</h2>
+    <canvas id="lobCombinedChart" height="300"></canvas>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div>GI Net Premiums</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#10b981"></div>GT Net Contributions</div>
+    </div>
+  </div>
+
+  <!-- LOB 5-year trend table -->
+  <div class="card" style="margin-top:20px">
+    <h2>GI — Gross Written Premiums by LOB Trend 2020–2024 (RM M)</h2>
+    <div style="overflow-x:auto">
+    <table class="data-table">
+      <thead><tr><th>Line of Business</th><th>2020</th><th>2021</th><th>2022</th><th>2023</th><th>2024</th><th>CAGR 4Y</th></tr></thead>
+      <tbody>
+        <tr><td>Motor</td><td>8,412</td><td>8,238</td><td>8,990</td><td>9,758</td><td>10,409</td><td><span class="chip chip-up">+5.5%</span></td></tr>
+        <tr><td>Fire</td><td>3,611</td><td>3,804</td><td>4,054</td><td>4,465</td><td>4,723</td><td><span class="chip chip-up">+6.9%</span></td></tr>
+        <tr><td>Medical &amp; Health</td><td>1,001</td><td>968</td><td>976</td><td>1,078</td><td>1,187</td><td><span class="chip chip-up">+4.4%</span></td></tr>
+        <tr><td>Personal Accident</td><td>994</td><td>1,011</td><td>1,446</td><td>1,212</td><td>1,391</td><td><span class="chip chip-up">+8.8%</span></td></tr>
+        <tr><td>MAT</td><td>1,375</td><td>1,418</td><td>1,511</td><td>1,598</td><td>1,826</td><td><span class="chip chip-up">+7.3%</span></td></tr>
+        <tr><td>Miscellaneous</td><td>2,266</td><td>2,691</td><td>2,914</td><td>3,463</td><td>3,517</td><td><span class="chip chip-up">+11.6%</span></td></tr>
+        <tr class="total-row"><td>TOTAL</td><td>17,660</td><td>18,131</td><td>19,891</td><td>21,574</td><td>23,053</td><td><span class="chip chip-up">+6.9%</span></td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+</div>
+
+<!-- TAB: Company Premiums -->
+<div id="tab-company" class="tab-content" style="display:none">
+  <div class="grid-2">
+    <div class="card">
+      <h2>General Insurance — Gross Direct Premiums Ranking 2024 (RM M)</h2>
+      <canvas id="giCompanyChart" height="480"></canvas>
+      <div class="note">Sorted by Gross Direct Premiums descending. Source: ISM FY2024.</div>
+    </div>
+    <div class="card">
+      <h2>General Takaful — Net Earned Contributions 2024 (RM M)</h2>
+      <canvas id="gtCompanyChart" height="180"></canvas>
+      <div class="note">GT companies shown by Net Earned Contributions. Source: ISM FY2024.</div>
+      <div style="height:20px"></div>
+      <h2>Market Share of Top 5 GI Companies</h2>
+      <div id="mktShareBars"></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px">
+    <h2>General Insurance — Company Size &amp; Market Share (GDP-based)</h2>
+    <div style="overflow-x:auto">
+    <table class="data-table" id="giCompanyTable">
+      <thead><tr>
+        <th onclick="sortCompTable(0)">#</th>
+        <th onclick="sortCompTable(1)">Company</th>
+        <th onclick="sortCompTable(2)">Gross Direct (M)</th>
+        <th onclick="sortCompTable(3)">Mkt Share %</th>
+        <th onclick="sortCompTable(4)">Net Earned (M)</th>
+        <th onclick="sortCompTable(5)">Retention %</th>
+        <th onclick="sortCompTable(6)">Net Claims (M)</th>
+        <th onclick="sortCompTable(7)">Prev Year GDP (M)</th>
+        <th onclick="sortCompTable(8)">YoY Growth</th>
+      </tr></thead>
+      <tbody id="giCompanyBody"></tbody>
+    </table>
+    </div>
+  </div>
+</div>
+
+<!-- TAB: Claims Analysis -->
+<div id="tab-claims" class="tab-content" style="display:none">
+  <div class="card" style="margin-bottom:20px">
+    <h2>General Insurance — Net Claims Incurred by Company 2024 (RM M)</h2>
+    <canvas id="nciCompanyChart" height="380"></canvas>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <h2>GI — NCI Ratio by Company vs Industry Avg (57.6%)</h2>
+      <div id="nciRatioViz"></div>
+    </div>
+    <div class="card">
+      <h2>GT — NCI Ratio by Company vs Industry Avg (64.0%)</h2>
+      <div id="gtNciRatioViz"></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px">
+    <h2>Claims Recoveries from Reinsurers — General Insurance 2024</h2>
+    <div class="grid-2">
+      <div>
+        <h3>From Licensed/Offshore Reinsurers</h3>
+        <div style="font-size:24px;font-weight:700;color:#3b82f6;margin:8px 0">RM 1,390M</div>
+        <div style="font-size:12px;color:#94a3b8">Recoveries from licensed/offshore insurers on gross claims paid of RM 9,664M</div>
+        <div style="font-size:12px;margin-top:6px">Recovery Rate: <strong style="color:#22c55e">14.4%</strong> of gross claims paid</div>
+      </div>
+      <div>
+        <h3>From Foreign Reinsurers</h3>
+        <div style="font-size:24px;font-weight:700;color:#8b5cf6;margin:8px 0">RM 474M</div>
+        <div style="font-size:12px;color:#94a3b8">Total claims recoveries from foreign insurers</div>
+        <div style="font-size:12px;margin-top:6px">Recovery Rate: <strong style="color:#8b5cf6">4.9%</strong> of gross claims paid</div>
+      </div>
+    </div>
+    <hr style="border-color:#2d3248;margin:16px 0">
+    <div class="grid-3">
+      <div><h3>Gross Claims Paid (Direct)</h3><div style="font-size:20px;font-weight:700;color:#f1f5f9">RM 9,664M</div><div style="font-size:11px;color:#94a3b8">vs RM 10,853M in 2023 (▼ -11.0%)</div></div>
+      <div><h3>Net Claims Paid</h3><div style="font-size:20px;font-weight:700;color:#f1f5f9">RM 7,979M</div><div style="font-size:11px;color:#94a3b8">Net of all recoveries</div></div>
+      <div><h3>Net Claims Incurred</h3><div style="font-size:20px;font-weight:700;color:#fbbf24">RM 8,953M</div><div style="font-size:11px;color:#94a3b8">Includes IBNR movements; vs RM 8,464M (▲ +5.8%)</div></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px">
+    <h2>Loss Ratio by Line of Business — GI vs GT Comparison (2024)</h2>
+    <canvas id="lossRatioCompChart" height="280"></canvas>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div>General Insurance NCI Ratio 2024</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#10b981"></div>General Takaful NCI Ratio 2024</div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB: Motor Deep Dive -->
+<div id="tab-motor" class="tab-content" style="display:none">
+  <div class="kpi-row">
+    <div class="kpi"><div class="kl">GI Motor GWP 2024</div><div class="kv">RM 10,409M</div><div class="ks" style="color:#22c55e">▲ 6.7% vs 2023</div></div>
+    <div class="kpi"><div class="kl">GT Motor GWC 2024</div><div class="kv">RM 4,066M</div><div class="ks" style="color:#22c55e">▲ 11.6% vs 2023</div></div>
+    <div class="kpi"><div class="kl">Combined Motor Market</div><div class="kv">RM 14,475M</div><div class="ks" style="color:#22c55e">▲ 7.9% vs 2023</div></div>
+    <div class="kpi"><div class="kl">GI Motor Share of Market</div><div class="kv">46.2%</div><div class="ks" style="color:#94a3b8">Stable vs 45.2% in 2023</div></div>
+    <div class="kpi"><div class="kl">GT Motor Share of Market</div><div class="kv">68.9%</div><div class="ks" style="color:#22c55e">▲ from 66.9% in 2023</div></div>
+    <div class="kpi"><div class="kl">GI Motor Retention Ratio</div><div class="kv">92.6%</div><div class="ks" style="color:#94a3b8">Slightly down from prev year</div></div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h2>Motor Insurance — GWP Breakdown 2024</h2>
+      <div id="motorBreakdown"></div>
+      <h3 style="margin-top:16px">GI Motor Net Premiums by Company (RM M)</h3>
+      <div id="motorCompanies"></div>
+    </div>
+    <div class="card">
+      <h2>Motor — GWP Trend 2019–2024 (RM M)</h2>
+      <canvas id="motorTrendChart" height="220"></canvas>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div>Motor Act ('Act')</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#6366f1"></div>Motor Others</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#10b981"></div>GT Motor</div>
+      </div>
+      <hr style="border-color:#2d3248;margin:16px 0">
+      <h3>Motor Loss Ratio Trend</h3>
+      <canvas id="motorLossChart" height="180"></canvas>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px">
+    <h2>Motor Insurance — Company Net Premiums &amp; NCI Ratio (2024)</h2>
+    <div style="overflow-x:auto">
+    <table class="data-table">
+      <thead><tr><th>#</th><th>Company</th><th>Net Motor Prem. (M)</th><th>Motor Act (M)</th><th>Motor Others (M)</th><th>Motor NCI% (Total)</th><th>Motor Act NCI%</th><th>Motor Others NCI%</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Liberty General</td><td>1,741.3</td><td>561.8</td><td>1,179.5</td><td class="pct-warn">65.1%</td><td>68.5%</td><td>63.5%</td></tr>
+        <tr><td>2</td><td>Allianz General</td><td>2,121.8</td><td>677.7</td><td>1,444.1</td><td class="pct-warn">66.0%</td><td>69.0%</td><td>64.7%</td></tr>
+        <tr><td>3</td><td>Etiqa General</td><td>374.5</td><td>75.5</td><td>299.0</td><td class="pct-bad">86.1%</td><td>110.9%</td><td>79.6%</td></tr>
+        <tr><td>4</td><td>Berjaya Sompo</td><td>672.3</td><td>112.8</td><td>559.6</td><td class="pct-warn">69.4%</td><td>114.6%</td><td>60.9%</td></tr>
+        <tr><td>5</td><td>MSIG Insurance</td><td>713.5</td><td>148.6</td><td>564.9</td><td class="pct-warn">66.3%</td><td>69.6%</td><td>65.5%</td></tr>
+        <tr><td>6</td><td>Tokio Marine</td><td>712.3</td><td>145.4</td><td>567.1</td><td class="pct-warn">64.4%</td><td>96.9%</td><td>56.8%</td></tr>
+        <tr><td>7</td><td>Generali</td><td>938.8</td><td>267.5</td><td>671.3</td><td class="pct-warn">60.8%</td><td>73.4%</td><td>56.0%</td></tr>
+        <tr><td>8</td><td>Lonpac</td><td>283.6</td><td>122.0</td><td>261.6</td><td class="pct-warn">74.9%</td><td>57.3%</td><td>84.2%</td></tr>
+        <tr><td>9</td><td>AIG Malaysia</td><td>207.1</td><td>21.5</td><td>185.6</td><td class="pct-warn">57.2%</td><td>71.5%</td><td>55.5%</td></tr>
+        <tr><td>10</td><td>Zurich General</td><td>709.6</td><td>219.4</td><td>490.2</td><td class="pct-warn">71.4%</td><td>116.3%</td><td>51.7%</td></tr>
+        <tr class="total-row"><td></td><td>Industry Total</td><td>9,642.2</td><td>2,698.1</td><td>6,944.1</td><td class="pct-warn">68.2%</td><td>81.3%</td><td>63.2%</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="note">Top 10 companies by motor net premiums. Motor Act = compulsory third party liability coverage. Motor Others = comprehensive + third party property damage.</p>
+  </div>
+</div>
+
+<!-- TAB: Reinsurance -->
+<div id="tab-reinsurance" class="tab-content" style="display:none">
+  <div class="kpi-row">
+    <div class="kpi"><div class="kl">Total Reinsurance Ceded (GI)</div><div class="kv">RM 7,004M</div><div class="ks" style="color:#ef4444">▲ +9.4% vs 2023</div></div>
+    <div class="kpi"><div class="kl">To Licensed/Offshore</div><div class="kv">RM 5,146M</div><div class="ks" style="color:#94a3b8">73.5% of total ceded</div></div>
+    <div class="kpi"><div class="kl">To Foreign Reinsurers</div><div class="kv">RM 1,851M</div><div class="ks" style="color:#94a3b8">26.5% of total ceded</div></div>
+    <div class="kpi"><div class="kl">Net Retention Rate</div><div class="kv">69.6%</div><div class="ks" style="color:#ef4444">▼ Down from 70.3% in 2023</div></div>
+    <div class="kpi"><div class="kl">GT Retakaful Ceded</div><div class="kv">RM 1,413M</div><div class="ks" style="color:#94a3b8">23.9% of GWC</div></div>
+    <div class="kpi"><div class="kl">GT Retention Rate</div><div class="kv">76.1%</div><div class="ks" style="color:#22c55e">▲ Up from 73.6% in 2023</div></div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h2>GI — Reinsurance Ceded by Line of Business 2024 (RM M)</h2>
+      <div id="reCededLob"></div>
+    </div>
+    <div class="card">
+      <h2>Risk Retention Trend — GI vs GT (%)</h2>
+      <canvas id="retentionTrendChart" height="280"></canvas>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div>General Insurance Retention %</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#10b981"></div>General Takaful Retention %</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px">
+    <h2>Reinsurance Ceded by Company — General Insurance 2024 (Total, RM M)</h2>
+    <div id="reCededCompBars"></div>
+    <p class="note">Total reinsurance ceded = Licensed/Offshore + Foreign reinsurers. Higher ceding = lower risk retention.</p>
+  </div>
+</div>
+
+<!-- TAB: Key Ratios History -->
+<div id="tab-ratios" class="tab-content" style="display:none">
+  <div class="grid-2">
+    <div class="card">
+      <h2>GI — Combined Ratio Components 2019–2024</h2>
+      <canvas id="combinedRatioChart" height="280"></canvas>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div>Loss Ratio</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#8b5cf6"></div>Commission Ratio</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div>ME Ratio</div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>GT — Combined Ratio Components 2021–2024</h2>
+      <canvas id="gtCombinedChart" height="280"></canvas>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#10b981"></div>Loss Ratio</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#34d399"></div>Commission Ratio</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#6ee7b7"></div>ME Ratio</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px">
+    <h2>Key Performance Ratios — All 19 GI Companies (2024)</h2>
+    <div style="overflow-x:auto">
+    <table class="data-table" id="ratiosTable">
+      <thead><tr>
+        <th onclick="sortRatioTable(0)">#</th>
+        <th onclick="sortRatioTable(1)">Company</th>
+        <th onclick="sortRatioTable(2)">NCI Ratio %</th>
+        <th onclick="sortRatioTable(3)">Commission %</th>
+        <th onclick="sortRatioTable(4)">ME Ratio %</th>
+        <th onclick="sortRatioTable(5)">Combined %</th>
+        <th onclick="sortRatioTable(6)">Operating %</th>
+        <th onclick="sortRatioTable(7)">UW Profit (M)</th>
+        <th onclick="sortRatioTable(8)">Op. Profit (M)</th>
+      </tr></thead>
+      <tbody id="ratiosBody"></tbody>
+    </table>
+    </div>
+    <p class="note">Sorted by Combined Ratio ascending (lower = better underwriting performance). Prev year figures shown in parentheses.</p>
+  </div>
+
+  <div class="card" style="margin-top:20px">
+    <h2>All 4 GT Companies — Key Performance Ratios (2024)</h2>
+    <div style="overflow-x:auto">
+    <table class="data-table">
+      <thead><tr><th>#</th><th>Operator</th><th>Net Earned Contribs (M)</th><th>NCI Ratio %</th><th>Commission %</th><th>ME Ratio %</th><th>Combined %</th><th>Operating %</th><th>UW P/L (M)</th><th>Op. P/L (M)</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Etiqa General Takaful</td><td>1,975.9</td>
+          <td class="pct-bad">67.5%</td><td>10.2%</td><td>25.2%</td>
+          <td class="pct-bad">102.9%</td><td>96.9%</td>
+          <td style="color:#ef4444">-57.8</td><td style="color:#22c55e">+61.0</td></tr>
+        <tr><td>2</td><td>STMAB</td><td>694.0</td>
+          <td class="pct-warn">62.0%</td><td>0.5%</td><td>44.4%</td>
+          <td class="pct-bad">107.0%</td><td>98.6%</td>
+          <td style="color:#ef4444">-48.4</td><td style="color:#22c55e">+9.3</td></tr>
+        <tr><td>3</td><td>Takaful Ikhlas General</td><td>498.2</td>
+          <td class="pct-good">47.8%</td><td>6.6%</td><td>41.5%</td>
+          <td class="pct-good">95.9%</td><td>94.3%</td>
+          <td style="color:#22c55e">+20.2</td><td style="color:#22c55e">+28.3</td></tr>
+        <tr><td>4</td><td>Zurich General Takaful</td><td>1,077.5</td>
+          <td class="pct-warn">64.9%</td><td>11.1%</td><td>22.0%</td>
+          <td class="pct-good">98.0%</td><td>92.3%</td>
+          <td style="color:#22c55e">+21.2</td><td style="color:#22c55e">+82.5</td></tr>
+        <tr class="total-row"><td></td><td>Industry</td><td>4,245.5</td>
+          <td class="pct-warn">63.6%</td><td>8.4%</td><td>29.5%</td>
+          <td class="pct-bad">101.5%</td><td>95.7%</td>
+          <td style="color:#ef4444">-64.9</td><td style="color:#22c55e">+181.1</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+// ===== DATA =====
+const GI_LOB = [
+  {name:'Aviation',     net:1.2,  share:0.01, nci24:-25.1, nci23:-93.8},
+  {name:'Cargo',        net:378.9,share:2.36,  nci24:31.1,  nci23:31.6},
+  {name:'Marine Hull',  net:55.6, share:0.35,  nci24:73.2,  nci23:32.4},
+  {name:'Offshore Oil', net:16.2, share:0.10,  nci24:64.0,  nci23:-190.4},
+  {name:'Fire',         net:2203.3,share:13.73,nci24:34.1,  nci23:35.4},
+  {name:'Motor Act',    net:2698.1,share:16.82,nci24:82.3,  nci23:80.4},
+  {name:'Motor Others', net:6944.1,share:43.28,nci24:63.2,  nci23:61.3},
+  {name:'Medical & Health',net:1100.0,share:6.86,nci24:68.3,nci23:65.9},
+  {name:'Personal Acc.',net:1213.6,share:7.56, nci24:34.7,  nci23:28.8},
+  {name:'Bonds',        net:65.9, share:0.41,  nci24:4.7,   nci23:12.7},
+  {name:'CAR & Eng.',   net:327.5,share:2.04,  nci24:45.0,  nci23:79.5},
+  {name:'Liabilities',  net:404.2,share:2.52,  nci24:42.4,  nci23:36.4},
+  {name:'WC / EL',      net:86.9, share:0.54,  nci24:-3.3,  nci23:4.0},
+  {name:'Others',       net:552.8,share:3.44,  nci24:37.4,  nci23:51.0},
+];
+
+const GT_LOB = [
+  {name:'Aviation',     net:0.3,  share:0.01,  nci24:-1.7,   nci23:-5.4},
+  {name:'Cargo',        net:9.5,  share:0.21,  nci24:19.9,   nci23:40.3},
+  {name:'Marine Hull',  net:3.7,  share:0.08,  nci24:215.1,  nci23:-13.1},
+  {name:'Offshore Oil', net:0.2,  share:0.00,  nci24:-59.9,  nci23:-372.0},
+  {name:'Fire',         net:567.2,share:12.60, nci24:26.7,   nci23:27.0},
+  {name:'Motor Act',    net:926.2,share:20.58, nci24:93.9,   nci23:99.9},
+  {name:'Motor Others', net:2497.5,share:55.51,nci24:66.1,   nci23:64.3},
+  {name:'Medical & Health',net:41.3,share:0.92,nci24:105.2,  nci23:40.3},
+  {name:'Personal Acc.',net:328.3,share:7.30,  nci24:20.0,   nci23:22.8},
+  {name:'Bonds',        net:0.4,  share:0.01,  nci24:-5.7,   nci23:-27.5},
+  {name:'CAR & Eng.',   net:41.9, share:0.93,  nci24:77.9,   nci23:64.4},
+  {name:'Liabilities',  net:29.4, share:0.65,  nci24:67.9,   nci23:94.2},
+  {name:'WC / EL',      net:10.5, share:0.23,  nci24:0.7,    nci23:0.1},
+  {name:'Others',       net:43.3, share:0.96,  nci24:64.4,   nci23:43.9},
+];
+
+const GI_COMPANIES = [
+  {n:'Allianz General', gdp:3368.9, gdpPrev:2946.9, nep:2804.2, nci:1740.6, ret:83.3},
+  {n:'Etiqa General',   gdp:2359.2, gdpPrev:2124.9, nep:606.1,  nci:418.5, ret:25.7},
+  {n:'Liberty General', gdp:2327.3, gdpPrev:null,    nep:2010.5, nci:1210.7, ret:86.4},
+  {n:'Generali',        gdp:2098.3, gdpPrev:2033.1,  nep:1541.5, nci:913.5, ret:73.5},
+  {n:'Berjaya Sompo',   gdp:1311.9, gdpPrev:1186.8,  nep:988.7,  nci:563.9, ret:75.4},
+  {n:'Lonpac',          gdp:1699.3, gdpPrev:1560.9,  nep:1037.3, nci:451.9, ret:61.1},
+  {n:'MSIG',            gdp:1760.6, gdpPrev:1703.5,  nep:1328.4, nci:710.5, ret:75.5},
+  {n:'Tokio Marine',    gdp:1457.0, gdpPrev:1327.5,  nep:1126.7, nci:642.5, ret:77.3},
+  {n:'Zurich General',  gdp:1087.4, gdpPrev:1016.1,  nep:862.7,  nci:586.7, ret:79.4},
+  {n:'AIG',             gdp:719.7,  gdpPrev:694.0,   nep:606.0,  nci:247.9, ret:84.2},
+  {n:'Chubb',           gdp:662.2,  gdpPrev:631.2,   nep:539.4,  nci:236.6, ret:81.5},
+  {n:'RHB Insurance',   gdp:904.9,  gdpPrev:859.5,   nep:499.3,  nci:273.7, ret:55.2},
+  {n:'Pacific Insurance',gdp:876.2, gdpPrev:773.7,   nep:346.8,  nci:225.6, ret:39.6},
+  {n:'GE General',      gdp:590.8,  gdpPrev:699.5,   nep:367.3,  nci:236.1, ret:62.2},
+  {n:'Tune',            gdp:285.7,  gdpPrev:328.6,   nep:227.9,  nci:125.6, ret:79.7},
+  {n:'AIA General',     gdp:335.4,  gdpPrev:355.5,   nep:324.6,  nci:166.2, ret:96.7},
+  {n:'QBE',             gdp:241.9,  gdpPrev:174.0,   nep:183.4,  nci:76.4,  ret:75.8},
+  {n:'P&O',             gdp:284.2,  gdpPrev:251.9,   nep:136.4,  nci:100.8, ret:48.0},
+  {n:'Progressive',     gdp:135.2,  gdpPrev:140.6,   nep:55.4,   nci:24.9,  ret:40.9},
+];
+
+const RATIOS_DATA = [
+  {n:'AIA General',     nci:51.19, comm:23.23, me:26.45, comb:100.87, op:94.26, uw:-2.8,   opPL:18.6},
+  {n:'AIG',             nci:40.92, comm:6.59,  me:31.11, comb:78.61,  op:71.05, uw:129.6,  opPL:175.4},
+  {n:'Allianz General', nci:62.07, comm:11.75, me:18.58, comb:92.40,  op:83.05, uw:213.0,  opPL:475.2},
+  {n:'Berjaya Sompo',   nci:57.03, comm:10.98, me:24.48, comb:92.49,  op:78.99, uw:74.2,   opPL:207.7},
+  {n:'Chubb',           nci:43.87, comm:15.63, me:33.66, comb:93.15,  op:81.51, uw:36.9,   opPL:99.8},
+  {n:'Etiqa General',   nci:69.05, comm:1.66,  me:29.12, comb:99.83,  op:90.04, uw:1.0,    opPL:60.4},
+  {n:'Generali',        nci:59.26, comm:10.91, me:29.46, comb:99.63,  op:89.79, uw:5.7,    opPL:157.4},
+  {n:'GE General',      nci:64.27, comm:10.71, me:35.93, comb:110.90, op:102.70,uw:-40.1,  opPL:-9.9},
+  {n:'Liberty',         nci:60.22, comm:10.76, me:23.30, comb:94.28,  op:88.20, uw:115.0,  opPL:237.2},
+  {n:'Lonpac',          nci:43.56, comm:7.58,  me:21.46, comb:72.60,  op:63.10, uw:284.2,  opPL:382.8},
+  {n:'MSIG',            nci:53.49, comm:10.81, me:21.41, comb:85.70,  op:73.24, uw:189.9,  opPL:355.4},
+  {n:'P&O',             nci:73.92, comm:3.04,  me:46.68, comb:123.64, op:102.74,uw:-32.2,  opPL:-3.7},
+  {n:'Pacific',         nci:65.05, comm:4.07,  me:32.69, comb:101.82, op:92.22, uw:-6.3,   opPL:27.0},
+  {n:'Progressive',     nci:44.98, comm:-0.37, me:79.40, comb:124.00, op:99.57, uw:-13.3,  opPL:0.2},
+  {n:'QBE',             nci:41.64, comm:13.92, me:30.76, comb:86.32,  op:74.97, uw:25.1,   opPL:45.9},
+  {n:'RHB',             nci:54.81, comm:9.77,  me:27.85, comb:92.43,  op:80.28, uw:37.8,   opPL:98.5},
+  {n:'Tokio Marine',    nci:57.03, comm:9.62,  me:24.95, comb:91.59,  op:82.20, uw:94.8,   opPL:200.6},
+  {n:'Tune',            nci:55.11, comm:10.86, me:46.42, comb:112.39, op:90.61, uw:-28.2,  opPL:21.4},
+  {n:'Zurich General',  nci:68.00, comm:11.82, me:21.00, comb:100.81, op:92.40, uw:-7.0,   opPL:65.6},
+];
+
+// ===== HELPERS =====
+function fmt(v,d=0){if(v===null)return '—';return v.toLocaleString('en-MY',{minimumFractionDigits:d,maximumFractionDigits:d})}
+function nciCls(v){if(v===null)return '';if(v<50)return 'pct-good';if(v<65)return 'pct-warn';return 'pct-bad'}
+function combCls(v){if(v<90)return 'pct-good';if(v<100)return 'pct-warn';return 'pct-bad'}
+
+// ===== CHART ENGINE =====
+function drawGroupedBar(id,labels,datasets,opts={}){
+  const canvas=document.getElementById(id);if(!canvas)return;
+  canvas.width=canvas.parentElement.offsetWidth||600;
+  const h=opts.height||300;canvas.height=h;
+  const ctx=canvas.getContext('2d');
+  const pad={t:20,r:20,b:opts.bpad||60,l:opts.lpad||60};
+  const W=canvas.width,H=h,innerW=W-pad.l-pad.r,innerH=H-pad.t-pad.b;
+  ctx.clearRect(0,0,W,H);
+  const nGroups=labels.length,nSeries=datasets.length;
+  const allVals=datasets.flatMap(d=>d.data);
+  const maxV=Math.max(...allVals.map(Math.abs))*1.05;
+  const minV=Math.min(0,...allVals);
+  const range=maxV-minV||1;
+  const groupW=innerW/nGroups;
+  const barW=Math.min(groupW/nSeries*0.85,opts.maxBarW||50);
+  function toY(v){return pad.t+innerH-(v-minV)/range*innerH}
+  ctx.strokeStyle='#1e2535';ctx.lineWidth=1;
+  for(let i=0;i<=5;i++){const v=minV+(maxV-minV)/5*i;const y=toY(v);ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(W-pad.r,y);ctx.stroke();ctx.fillStyle='#475569';ctx.font='10px system-ui';ctx.textAlign='right';const s=opts.yFmt?opts.yFmt(v):Math.round(v).toLocaleString();ctx.fillText(s,pad.l-4,y+3);}
+  datasets.forEach((ds,si)=>{ctx.fillStyle=ds.color;ds.data.forEach((v,gi)=>{const x=pad.l+gi*groupW+(si*(barW+1))+(groupW-(nSeries*(barW+1)))/2;const y0=toY(0),y1=toY(v);ctx.fillRect(x,Math.min(y0,y1),barW,Math.abs(y1-y0));});});
+  ctx.fillStyle='#64748b';ctx.font='10px system-ui';ctx.textAlign='center';
+  labels.forEach((l,i)=>{const x=pad.l+i*groupW+groupW/2;const lines=l.split('\n');lines.forEach((ln,li)=>ctx.fillText(ln,x,H-pad.b+14+li*12));});
+}
+
+function drawLineChart(id,labels,datasets,opts={}){
+  const canvas=document.getElementById(id);if(!canvas)return;
+  canvas.width=canvas.parentElement.offsetWidth||600;
+  const h=opts.height||280;canvas.height=h;
+  const ctx=canvas.getContext('2d');
+  const pad={t:20,r:20,b:40,l:opts.lpad||55};
+  const W=canvas.width,H=h,innerW=W-pad.l-pad.r,innerH=H-pad.t-pad.b;
+  ctx.clearRect(0,0,W,H);
+  const allV=datasets.flatMap(d=>d.data);
+  const minV=Math.min(...allV)*0.9,maxV=Math.max(...allV)*1.1;
+  const range=maxV-minV||1;
+  function toX(i){return pad.l+i*(innerW/(labels.length-1))}
+  function toY(v){return pad.t+innerH-(v-minV)/range*innerH}
+  ctx.strokeStyle='#1e2535';ctx.lineWidth=1;
+  for(let i=0;i<=5;i++){const v=minV+(range/5)*i;const y=toY(v);ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(W-pad.r,y);ctx.stroke();ctx.fillStyle='#475569';ctx.font='10px system-ui';ctx.textAlign='right';ctx.fillText(opts.yFmt?opts.yFmt(v):Math.round(v),pad.l-4,y+3);}
+  ctx.fillStyle='#64748b';ctx.font='10px system-ui';ctx.textAlign='center';
+  labels.forEach((l,i)=>ctx.fillText(l,toX(i),H-10));
+  datasets.forEach(ds=>{ctx.strokeStyle=ds.color;ctx.lineWidth=2.5;ctx.beginPath();ds.data.forEach((v,i)=>i?ctx.lineTo(toX(i),toY(v)):ctx.moveTo(toX(i),toY(v)));ctx.stroke();ctx.fillStyle=ds.color;ds.data.forEach((v,i)=>{ctx.beginPath();ctx.arc(toX(i),toY(v),3.5,0,Math.PI*2);ctx.fill();});});
+}
+
+function drawHorizBar(id,labels,values,colors,opts={}){
+  const canvas=document.getElementById(id);if(!canvas)return;
+  const h=Math.max(labels.length*28+40,100);
+  canvas.width=canvas.parentElement.offsetWidth||600;canvas.height=h;
+  const ctx=canvas.getContext('2d');
+  const pad={t:10,r:80,b:20,l:opts.lpad||150};
+  const W=canvas.width,H=h,innerW=W-pad.l-pad.r;
+  ctx.clearRect(0,0,W,H);
+  const maxV=Math.max(...values.map(Math.abs));
+  const bH=16,gap=28;
+  ctx.fillStyle='#64748b';ctx.font='bold 10px system-ui';ctx.textAlign='right';
+  labels.forEach((l,i)=>{
+    const y=pad.t+i*gap;const v=values[i];const bW=Math.abs(v)/maxV*(innerW*0.85);
+    ctx.fillStyle='#94a3b8';ctx.textAlign='right';ctx.font='11px system-ui';ctx.fillText(l,pad.l-6,y+bH-2);
+    ctx.fillStyle=colors[i]||'#3b82f6';
+    ctx.fillRect(pad.l,y,bW,bH);
+    ctx.fillStyle='#e2e8f0';ctx.textAlign='left';ctx.font='11px system-ui';
+    ctx.fillText(opts.fmt?opts.fmt(v):v.toLocaleString(),pad.l+bW+6,y+bH-2);
+  });
+}
+
+// ===== RENDER FUNCTIONS =====
+function renderLOBTable(bodyId,data,totalNet){
+  const tbody=document.getElementById(bodyId);
+  const sorted=[...data].sort((a,b)=>b.net-a.net);
+  const totalRow={name:'Total',net:data.reduce((s,d)=>s+d.net,0),share:100,nci24:null,nci23:null};
+  [...sorted,totalRow].forEach((d,i)=>{
+    const chg=d.nci24!==null&&d.nci23!==null?d.nci24-d.nci23:null;
+    const chgStr=chg!==null?`<span style="color:${chg>0?'#ef4444':'#22c55e'}">${chg>0?'+':''}${chg.toFixed(1)}</span>`:'—';
+    const tr=document.createElement('tr');
+    if(i===sorted.length)tr.classList.add('total-row');
+    tr.innerHTML=`<td>${d.name}</td>
+      <td>${fmt(d.net,1)}<div style="display:inline-block;width:${Math.min(50,(d.net/totalNet*100)*0.4)}px;height:5px;background:#3b82f6;vertical-align:middle;margin-left:4px;border-radius:2px"></div></td>
+      <td>${d.share.toFixed(2)}%</td>
+      <td><span class="${nciCls(d.nci24)}">${d.nci24!==null?d.nci24.toFixed(1)+'%':'—'}</span></td>
+      <td>${d.nci23!==null?d.nci23.toFixed(1)+'%':'—'}</td>
+      <td>${chgStr}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function renderCompanyTable(){
+  const sorted=[...GI_COMPANIES].sort((a,b)=>b.gdp-a.gdp);
+  const totalGDP=sorted.reduce((s,c)=>s+c.gdp,0);
+  const tbody=document.getElementById('giCompanyBody');
+  sorted.forEach((c,i)=>{
+    const yoy=c.gdpPrev?(((c.gdp-c.gdpPrev)/c.gdpPrev)*100):null;
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td><span class="rank-num">${i+1}</span></td>
+      <td style="font-weight:600;color:#f1f5f9">${c.n}</td>
+      <td style="text-align:right">${fmt(c.gdp,0)}</td>
+      <td style="text-align:right">${(c.gdp/totalGDP*100).toFixed(2)}%</td>
+      <td style="text-align:right">${fmt(c.nep,0)}</td>
+      <td style="text-align:right">${c.ret.toFixed(1)}%</td>
+      <td style="text-align:right">${fmt(c.nci,0)}</td>
+      <td style="text-align:right">${c.gdpPrev?fmt(c.gdpPrev,0):'—'}</td>
+      <td style="text-align:right">${yoy!==null?`<span style="color:${yoy>=0?'#22c55e':'#ef4444'}">${yoy>=0?'▲':' ▼'} ${Math.abs(yoy).toFixed(1)}%</span>`:'—'}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function renderNciViz(){
+  const ind=57.6;
+  const el=document.getElementById('nciRatioViz');
+  const sorted=[...RATIOS_DATA].sort((a,b)=>a.nci-b.nci);
+  el.innerHTML=sorted.map(c=>{
+    const diff=c.nci-ind;
+    const col=c.nci<50?'#22c55e':c.nci<65?'#fbbf24':'#ef4444';
+    return `<div style="margin:4px 0">
+      <div style="display:flex;justify-content:space-between;margin-bottom:1px">
+        <span style="font-size:10px;color:#94a3b8">${c.n}</span>
+        <span style="font-size:11px;font-weight:600;color:${col}">${c.nci.toFixed(1)}%
+          <span style="font-size:9px;color:${diff>0?'#ef4444':'#22c55e'}">${diff>0?'+':''}${diff.toFixed(1)}pp</span>
+        </span>
+      </div>
+      <div style="height:5px;background:#0d1117;border-radius:2px;overflow:hidden">
+        <div style="width:${Math.min(100,c.nci)}%;height:100%;background:${col}"></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderGTNciViz(){
+  const gtData=[
+    {n:'Takaful Ikhlas General',nci:47.83},{n:'STMAB',nci:62.01},
+    {n:'Zurich GT',nci:64.89},{n:'Etiqa GT',nci:67.50},{n:'Industry',nci:64.0}
+  ];
+  const ind=64.0;
+  const el=document.getElementById('gtNciRatioViz');
+  el.innerHTML=gtData.map(c=>{
+    const col=c.nci<55?'#22c55e':c.nci<65?'#fbbf24':'#ef4444';
+    const diff=c.nci-ind;
+    return `<div style="margin:8px 0">
+      <div style="display:flex;justify-content:space-between;margin-bottom:2px">
+        <span style="font-size:11px;color:#94a3b8">${c.n}</span>
+        <span style="font-size:13px;font-weight:600;color:${col}">${c.nci.toFixed(1)}%
+          ${c.n!=='Industry'?`<span style="font-size:10px;color:${diff>0?'#ef4444':'#22c55e'}">${diff>0?'+':''}${diff.toFixed(1)}pp vs avg</span>`:''}
+        </span>
+      </div>
+      <div style="height:8px;background:#0d1117;border-radius:3px;overflow:hidden">
+        <div style="width:${Math.min(100,c.nci)}%;height:100%;background:${col}"></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderRatiosTable(){
+  const sorted=[...RATIOS_DATA].sort((a,b)=>a.comb-b.comb);
+  const tbody=document.getElementById('ratiosBody');
+  sorted.forEach((c,i)=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td><span class="rank-num">${i+1}</span></td>
+      <td style="font-weight:600;color:#f1f5f9">${c.n}</td>
+      <td><span class="${nciCls(c.nci)}">${c.nci.toFixed(1)}%</span></td>
+      <td style="text-align:right">${c.comm.toFixed(1)}%</td>
+      <td style="text-align:right">${c.me.toFixed(1)}%</td>
+      <td style="text-align:right"><span class="${combCls(c.comb)}">${c.comb.toFixed(1)}%</span></td>
+      <td style="text-align:right">${c.op.toFixed(1)}%</td>
+      <td style="text-align:right;color:${c.uw>=0?'#22c55e':'#ef4444'};font-weight:600">${c.uw>=0?'+':''}${fmt(c.uw,1)}</td>
+      <td style="text-align:right;color:${c.opPL>=0?'#22c55e':'#ef4444'};font-weight:600">${c.opPL>=0?'+':''}${fmt(c.opPL,1)}</td>`;
+    tbody.appendChild(tr);
+  });
+  // Add total row
+  const total=document.createElement('tr');total.classList.add('total-row');
+  total.innerHTML=`<td></td><td>Industry</td>
+    <td><span class="pct-warn">57.6%</span></td>
+    <td style="text-align:right">10.4%</td>
+    <td style="text-align:right">25.3%</td>
+    <td style="text-align:right"><span class="pct-good">93.1%</span></td>
+    <td style="text-align:right">83.2%</td>
+    <td style="text-align:right;color:#22c55e;font-weight:600">+1,077</td>
+    <td style="text-align:right;color:#22c55e;font-weight:600">+2,615</td>`;
+  tbody.appendChild(total);
+}
+
+function renderMotorBreakdown(){
+  const el=document.getElementById('motorBreakdown');
+  el.innerHTML=`
+    <div class="grid-2" style="gap:8px;margin-bottom:12px">
+      <div style="background:#0d1117;border-radius:6px;padding:10px">
+        <div style="font-size:10px;color:#64748b;margin-bottom:2px">GI Motor Act (Compulsory)</div>
+        <div style="font-size:18px;font-weight:700;color:#3b82f6">RM 2,934M</div>
+        <div style="font-size:10px;color:#94a3b8">28.2% of GI motor GWP</div>
+      </div>
+      <div style="background:#0d1117;border-radius:6px;padding:10px">
+        <div style="font-size:10px;color:#64748b;margin-bottom:2px">GI Motor Others (Comp+3rd party)</div>
+        <div style="font-size:18px;font-weight:700;color:#6366f1">RM 7,475M</div>
+        <div style="font-size:10px;color:#94a3b8">71.8% of GI motor GWP</div>
+      </div>
+    </div>
+    <div style="background:#0d1117;border-radius:6px;padding:10px;margin-bottom:8px">
+      <div style="font-size:10px;color:#64748b;margin-bottom:2px">GT Motor (Total)</div>
+      <div style="font-size:18px;font-weight:700;color:#10b981">RM 4,066M</div>
+      <div style="font-size:10px;color:#94a3b8">68.9% of all GT contributions. Act: RM 881M | Others: RM 3,185M</div>
+    </div>`;
+  // Top 5 motor companies
+  const top5=[
+    {n:'Allianz General',v:2121.8},{n:'Liberty',v:1741.3},{n:'MSIG',v:713.5},
+    {n:'Tokio Marine',v:712.3},{n:'Zurich General',v:709.6}
+  ];
+  const compEl=document.getElementById('motorCompanies');
+  const maxV=top5[0].v;
+  compEl.innerHTML=top5.map((c,i)=>`
+    <div style="margin:5px 0;display:flex;align-items:center;gap:8px">
+      <span style="font-size:10px;color:#64748b;width:16px">${i+1}</span>
+      <span style="font-size:11px;color:#94a3b8;width:110px">${c.n}</span>
+      <div style="flex:1;height:12px;background:#0d1117;border-radius:3px;overflow:hidden">
+        <div style="width:${c.v/maxV*100}%;height:100%;background:#3b82f6;border-radius:3px"></div>
+      </div>
+      <span style="font-size:11px;color:#e2e8f0;width:55px;text-align:right">${fmt(c.v,0)}M</span>
+    </div>`).join('');
+}
+
+function renderReCeded(){
+  const data=[
+    {lob:'Motor',gi:698,to:'Licensed'},
+    {lob:'Fire',gi:2520,to:'Licensed'},
+    {lob:'MAT',gi:626,to:'Licensed+Foreign'},
+    {lob:'Medical & Health',gi:246,to:'Licensed'},
+    {lob:'Personal Acc.',gi:313,to:'Licensed'},
+    {lob:'CAR & Eng.',gi:993,to:'Licensed'},
+    {lob:'Liabilities',gi:624,to:'Licensed'},
+    {lob:'Others',gi:530,to:'Licensed'},
+  ];
+  const el=document.getElementById('reCededLob');
+  const maxV=Math.max(...data.map(d=>d.gi));
+  el.innerHTML=data.map(d=>`
+    <div style="margin:6px 0">
+      <div style="display:flex;justify-content:space-between;margin-bottom:2px">
+        <span style="font-size:11px;color:#94a3b8">${d.lob}</span>
+        <span style="font-size:12px;color:#e2e8f0;font-weight:600">${fmt(d.gi,0)}M</span>
+      </div>
+      <div style="height:10px;background:#0d1117;border-radius:3px;overflow:hidden">
+        <div style="width:${d.gi/maxV*100}%;height:100%;background:linear-gradient(90deg,#3b82f6,#6366f1);border-radius:3px"></div>
+      </div>
+    </div>`).join('');
+}
+
+function renderCompanyCededBars(){
+  const data=[
+    {n:'Etiqa General',ceded:1732},
+    {n:'Liberty',ceded:323},
+    {n:'Allianz General',ceded:544},
+    {n:'Generali',ceded:472},
+    {n:'Pacific Insurance',ceded:638},
+    {n:'Berjaya Sompo',ceded:289},
+    {n:'AIG',ceded:248},
+    {n:'Zurich General',ceded:199},
+    {n:'Tokio Marine',ceded:300},
+    {n:'MSIG',ceded:402},
+    {n:'Chubb',ceded:163},
+    {n:'RHB',ceded:405},
+    {n:'QBE',ceded:101},
+    {n:'Lonpac',ceded:641},
+    {n:'Berjaya Sompo',ceded:289},
+  ].sort((a,b)=>b.ceded-a.ceded).slice(0,10);
+  const el=document.getElementById('reCededCompBars');
+  const maxV=data[0].ceded;
+  el.innerHTML=data.map((d,i)=>`
+    <div style="margin:5px 0;display:flex;align-items:center;gap:8px">
+      <span style="font-size:10px;color:#64748b;width:16px">${i+1}</span>
+      <span style="font-size:11px;color:#94a3b8;width:140px">${d.n}</span>
+      <div style="flex:1;height:14px;background:#0d1117;border-radius:3px;overflow:hidden">
+        <div style="width:${d.ceded/maxV*100}%;height:100%;background:#8b5cf6;border-radius:3px"></div>
+      </div>
+      <span style="font-size:11px;color:#e2e8f0;width:60px;text-align:right">${fmt(d.ceded,0)}M</span>
+    </div>`).join('');
+}
+
+function renderMktShareBars(){
+  const total=GI_COMPANIES.reduce((s,c)=>s+c.gdp,0);
+  const sorted=[...GI_COMPANIES].sort((a,b)=>b.gdp-a.gdp).slice(0,5);
+  const el=document.getElementById('mktShareBars');
+  el.innerHTML=sorted.map((c,i)=>{
+    const pct=(c.gdp/total*100).toFixed(1);
+    const colors=['#3b82f6','#6366f1','#8b5cf6','#a78bfa','#c084fc'];
+    return `<div style="margin:6px 0">
+      <div style="display:flex;justify-content:space-between;margin-bottom:2px">
+        <span style="font-size:11px;color:#94a3b8">${c.n}</span>
+        <span style="font-size:12px;font-weight:600;color:#f1f5f9">${pct}%</span>
+      </div>
+      <div style="height:10px;background:#0d1117;border-radius:3px;overflow:hidden">
+        <div style="width:${pct}%;height:100%;background:${colors[i]};border-radius:3px"></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ===== TABS =====
+function showTab(name,btn){
+  document.querySelectorAll('.tab-content').forEach(t=>t.style.display='none');
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+name).style.display='block';
+  btn.classList.add('active');
+  // Lazy init charts on first show
+  if(name==='lob'&&!window._lobInited){window._lobInited=true;initLobCharts();}
+  if(name==='company'&&!window._compInited){window._compInited=true;initCompanyCharts();}
+  if(name==='claims'&&!window._claimsInited){window._claimsInited=true;initClaimsCharts();}
+  if(name==='motor'&&!window._motorInited){window._motorInited=true;initMotorCharts();}
+  if(name==='reinsurance'&&!window._reinsInited){window._reinsInited=true;initReinsCharts();}
+  if(name==='ratios'&&!window._ratioInited){window._ratioInited=true;initRatioCharts();}
+}
+
+function initLobCharts(){
+  renderLOBTable('giLobBody',GI_LOB,16060);
+  renderLOBTable('gtLobBody',GT_LOB,4500);
+  // Combined LOB chart — major lines only
+  const majorLobs=['Motor Act','Motor Others','Fire','Personal Acc.','Medical & Health','CAR & Eng.','MAT'];
+  const giVals=majorLobs.map(l=>{const d=GI_LOB.find(x=>x.name===l);return d?d.net:0;});
+  const gtVals=majorLobs.map(l=>{const d=GT_LOB.find(x=>x.name===l);return d?d.net:0;});
+  drawGroupedBar('lobCombinedChart',majorLobs.map(l=>l.replace(' ','\\n')),
+    [{data:giVals,color:'#3b82f6'},{data:gtVals,color:'#10b981'}],
+    {height:300,lpad:70,yFmt:v=>v>=1000?(v/1000).toFixed(1)+'k':Math.round(v)});
+}
+
+function initCompanyCharts(){
+  const sorted=[...GI_COMPANIES].sort((a,b)=>b.gdp-a.gdp);
+  const labels=sorted.map(c=>c.n.replace('Insurance','Ins.').replace('General','Gen.'));
+  drawGroupedBar('giCompanyChart',labels,[{data:sorted.map(c=>c.gdp),color:'#3b82f6'}],{height:480,lpad:60,yFmt:v=>v>=1000?(v/1000).toFixed(1)+'k':Math.round(v),maxBarW:30});
+  const gtData=[
+    {n:'Etiqa GT',nec:1975.9},{n:'Zurich GT',nec:1077.5},
+    {n:'STMAB',nec:694.0},{n:'Takaful Ikhlas Gen.',nec:498.2}
+  ];
+  drawGroupedBar('gtCompanyChart',gtData.map(c=>c.n),[{data:gtData.map(c=>c.nec),color:'#10b981'}],{height:180,lpad:60});
+  renderCompanyTable();
+  renderMktShareBars();
+}
+
+function initClaimsCharts(){
+  const sorted=[...RATIOS_DATA].sort((a,b)=>b.nci-a.nci);
+  const nciVals=sorted.map(c=>c.nci*c.nci/100*20);// scaled
+  drawGroupedBar('nciCompanyChart',sorted.map(c=>c.n),
+    [{data:sorted.map(c=>{const d=GI_COMPANIES.find(x=>x.n.includes(c.n.split(' ')[0]));return d?d.nci:0;}),color:'#ef4444'}],
+    {height:380,lpad:60,yFmt:v=>v>=1000?(v/1000).toFixed(1)+'k':Math.round(v)});
+  renderNciViz();renderGTNciViz();
+  // Loss ratio comparison chart
+  const lobs=['Motor','Fire','MAT','Med & Health','Pers. Acc.','CAR','Liabilities'];
+  const giNci=[68.6,34.1,36.6,68.3,34.7,45.0,42.4];
+  const gtNci=[73.7,26.7,108.5,105.2,20.0,77.9,67.9];
+  drawGroupedBar('lossRatioCompChart',lobs,
+    [{data:giNci,color:'#3b82f6'},{data:gtNci,color:'#10b981'}],
+    {height:280,lpad:60,yFmt:v=>v.toFixed(0)+'%'});
+}
+
+function initMotorCharts(){
+  renderMotorBreakdown();
+  const motorYrs=['2019','2020','2021','2022','2023','2024'];
+  const motorAct=[2263,2368,2368,2510,2606,2934];
+  const motorOthers=[5563,5843,5427,5984,6610,7475];
+  const gtMotor=[2286,null,2176,2627,3038,3424];
+  drawGroupedBar('motorTrendChart',motorYrs,[
+    {data:motorAct,color:'#3b82f6'},
+    {data:motorOthers,color:'#6366f1'},
+  ],{height:220,lpad:60,yFmt:v=>v>=1000?(v/1000).toFixed(1)+'k':Math.round(v)});
+  const motorLoss=[70.1,55.6,55.6,65.3,66.7,68.6];
+  drawLineChart('motorLossChart',motorYrs,[{data:motorLoss,color:'#fbbf24'}],{height:180,lpad:50,yFmt:v=>v+'%'});
+}
+
+function initReinsCharts(){
+  renderReCeded();renderCompanyCededBars();
+  drawLineChart('retentionTrendChart',
+    ['2019','2020','2021','2022','2023','2024'],
+    [{data:[75.5,75.9,72.3,73.0,70.3,69.6],color:'#3b82f6'},
+     {data:[null,null,79.8,76.5,76.8,76.1].filter(v=>v),color:'#10b981'}],
+    {height:280,lpad:50,yFmt:v=>v+'%'});
+}
+
+function initRatioCharts(){
+  renderRatiosTable();
+  const rHist=[
+    {y:'2019',loss:58.2,comm:11.1,me:23.6},{y:'2020',loss:52.8,comm:10.3,me:24.3},
+    {y:'2021',loss:50.0,comm:10.0,me:24.6},{y:'2022',loss:53.7,comm:11.0,me:24.1},
+    {y:'2023',loss:56.7,comm:10.9,me:24.6},{y:'2024',loss:57.6,comm:10.4,me:25.3}
+  ];
+  drawGroupedBar('combinedRatioChart',rHist.map(r=>r.y),[
+    {data:rHist.map(r=>r.loss),color:'#3b82f6'},
+    {data:rHist.map(r=>r.comm),color:'#8b5cf6'},
+    {data:rHist.map(r=>r.me),color:'#f59e0b'}
+  ],{height:280,lpad:50,yFmt:v=>v.toFixed(0)+'%'});
+  const gtHist=[
+    {y:'2021',loss:51.3,comm:8.4,me:31.2},{y:'2022',loss:60.7,comm:9.3,me:32.4},
+    {y:'2023',loss:63.2,comm:8.6,me:33.1},{y:'2024',loss:64.0,comm:8.5,me:29.6}
+  ];
+  drawGroupedBar('gtCombinedChart',gtHist.map(r=>r.y),[
+    {data:gtHist.map(r=>r.loss),color:'#10b981'},
+    {data:gtHist.map(r=>r.comm),color:'#34d399'},
+    {data:gtHist.map(r=>r.me),color:'#6ee7b7'}
+  ],{height:280,lpad:50,yFmt:v=>v.toFixed(0)+'%'});
+}
+
+// Init first tab
+initLobCharts();
+</script>
+</body>
+</html>
