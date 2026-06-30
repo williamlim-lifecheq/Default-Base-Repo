@@ -1,0 +1,54 @@
+.wrapper {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 28px 32px;
+  min-height: 120px;
+  cursor: text;
+}
+
+.text {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.25rem;
+  line-height: 2;
+  letter-spacing: 0.02em;
+  word-break: break-word;
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.char {
+  position: relative;
+  transition: color 0.05s;
+}
+
+.correct {
+  color: var(--correct);
+}
+
+.incorrect {
+  color: var(--incorrect);
+  background-color: var(--incorrect-bg);
+  border-radius: 2px;
+}
+
+.pending {
+  color: var(--text-muted);
+}
+
+.cursor::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.1em;
+  height: 1.4em;
+  width: 2px;
+  background: var(--accent);
+  border-radius: 1px;
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
