@@ -6,12 +6,18 @@ const initialState = {
   startTime: null,
   elapsed: 0,
   remaining: 0,
+  passageIndex: 0,
+  totalCorrectChars: 0,
 };
 
 function reducer(state, action) {
   switch (action.type) {
     case 'START_COUNTDOWN':
-      return { ...state, phase: 'countdown', typed: '', elapsed: 0, remaining: action.timerSeconds };
+      return {
+        ...initialState,
+        phase: 'countdown',
+        remaining: action.timerSeconds,
+      };
     case 'START_ACTIVE':
       return { ...state, phase: 'active', startTime: action.now };
     case 'TICK': {
@@ -19,10 +25,25 @@ function reducer(state, action) {
       const remaining = Math.max(0, action.timerSeconds - elapsed);
       return { ...state, elapsed, remaining };
     }
+    case 'TYPE': {
+      const newTyped = action.value;
+      const currentPassage = action.passages[state.passageIndex];
+      if (newTyped.length >= currentPassage.length) {
+        const correct = newTyped
+          .split('')
+          .filter((c, i) => i < currentPassage.length && c === currentPassage[i]).length;
+        const nextIndex = (state.passageIndex + 1) % action.passages.length;
+        return {
+          ...state,
+          typed: '',
+          passageIndex: nextIndex,
+          totalCorrectChars: state.totalCorrectChars + correct,
+        };
+      }
+      return { ...state, typed: newTyped };
+    }
     case 'FINISH':
       return { ...state, phase: 'finished' };
-    case 'TYPE':
-      return { ...state, typed: action.value };
     case 'RESET':
       return { ...initialState, remaining: action.timerSeconds };
     default:
@@ -30,7 +51,7 @@ function reducer(state, action) {
   }
 }
 
-export function useTypingGame({ passage, timerSeconds }) {
+export function useTypingGame({ passages, timerSeconds }) {
   const [state, dispatch] = useReducer(reducer, {
     ...initialState,
     remaining: timerSeconds,
@@ -39,17 +60,24 @@ export function useTypingGame({ passage, timerSeconds }) {
   const intervalRef = useRef(null);
   const inputRef = useRef(null);
 
-  const chars = passage.split('');
+  const currentPassage = passages[state.passageIndex] ?? passages[0];
+  const chars = currentPassage.split('');
   const typedChars = state.typed.split('');
 
-  const correctCount = typedChars.filter((c, i) => c === chars[i]).length;
+  const currentPassageCorrectChars = typedChars.filter(
+    (c, i) => c === chars[i],
+  ).length;
+
+  const totalCorrect = state.totalCorrectChars + currentPassageCorrectChars;
+
   const wpm =
     state.elapsed >= 3
-      ? Math.round((correctCount / 5) / (state.elapsed / 60))
+      ? Math.round((totalCorrect / 5) / (state.elapsed / 60))
       : 0;
+
   const accuracy =
-    state.typed.length > 0
-      ? correctCount / state.typed.length
+    state.typed.length + state.totalCorrectChars > 0
+      ? totalCorrect / (state.typed.length + state.totalCorrectChars)
       : 1.0;
 
   const charStatuses = chars.map((char, i) => {
@@ -74,8 +102,7 @@ export function useTypingGame({ passage, timerSeconds }) {
     const now = Date.now();
     dispatch({ type: 'START_ACTIVE', now });
     intervalRef.current = setInterval(() => {
-      const currentNow = Date.now();
-      dispatch({ type: 'TICK', now: currentNow, timerSeconds });
+      dispatch({ type: 'TICK', now: Date.now(), timerSeconds });
     }, 250);
     if (inputRef.current) inputRef.current.focus();
   }, [timerSeconds]);
@@ -94,9 +121,9 @@ export function useTypingGame({ passage, timerSeconds }) {
   const onInput = useCallback(
     (e) => {
       if (state.phase !== 'active') return;
-      dispatch({ type: 'TYPE', value: e.target.value });
+      dispatch({ type: 'TYPE', value: e.target.value, passages });
     },
-    [state.phase],
+    [state.phase, passages],
   );
 
   const reset = useCallback(() => {
@@ -109,11 +136,13 @@ export function useTypingGame({ passage, timerSeconds }) {
     typed: state.typed,
     elapsed: state.elapsed,
     remaining: state.remaining,
+    passageIndex: state.passageIndex,
+    totalCorrectChars: state.totalCorrectChars,
     wpm,
     accuracy,
     charStatuses,
     cursorPosition,
-    correctCount,
+    currentPassageCorrectChars,
     inputRef,
     startCountdown,
     startActive,

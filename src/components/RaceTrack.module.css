@@ -1,0 +1,88 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 20px;
+}
+
+.lane {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.playerLane .track {
+  border-color: var(--accent);
+}
+
+.label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  min-width: 52px;
+  text-align: right;
+}
+
+.playerLane .label {
+  color: var(--accent);
+}
+
+.track {
+  position: relative;
+  flex: 1;
+  height: 32px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+/* Dashed road markings */
+.track::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.06) 0px,
+    rgba(255, 255, 255, 0.06) 12px,
+    transparent 12px,
+    transparent 24px
+  );
+  transform: translateY(-50%);
+}
+
+/* Finish line */
+.finishLine {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  background: repeating-linear-gradient(
+    180deg,
+    #fff 0px, #fff 4px,
+    #000 4px, #000 8px
+  );
+  opacity: 0.6;
+  z-index: 1;
+}
+
+.car {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.4rem;
+  line-height: 1;
+  transition: left 0.25s linear;
+  z-index: 2;
+  filter: drop-shadow(0 1px 3px rgba(0,0,0,0.5));
+}
