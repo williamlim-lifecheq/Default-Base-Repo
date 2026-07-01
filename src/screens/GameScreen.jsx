@@ -9,7 +9,7 @@ import { RaceTrack } from '../components/RaceTrack.jsx';
 import styles from './GameScreen.module.css';
 
 const AI_RACERS = [
-  { name: 'Rival',  emoji: '🚗', speedFactor: 1.1,  color: '#f87171' },
+  { name: 'Rival',  emoji: '🚗', speedFactor: 1.0,  color: '#f87171' },
   { name: 'Rookie', emoji: '🛺', speedFactor: 0.75, color: '#facc15' },
 ];
 
@@ -48,9 +48,17 @@ export function GameScreen({ mode, level, attempt, onGameEnd }) {
   }, [phase]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Race track positions
+  // playerPct is computed before the finish-line effect so both can use it
   const trackLength = (levelConfig.requiredWPM * 5 / 60) * levelConfig.timerSeconds;
   const totalCorrect = totalCorrectChars + currentPassageCorrectChars;
   const playerPct = trackLength > 0 ? Math.min(100, (totalCorrect / trackLength) * 100) : 0;
+
+  // Finish line ends the round — crossing 100% is an immediate pass
+  useEffect(() => {
+    if (phase === 'active' && playerPct >= 100) {
+      onGameEnd({ wpm, accuracy, elapsed, mode, level, requiredWPM: levelConfig.requiredWPM });
+    }
+  }, [playerPct, phase]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const aiRacers = AI_RACERS.map((r) => ({
     ...r,
