@@ -35,7 +35,7 @@ CONTRACTOR_EMAIL = "william.lim@lifecheq.co.za"
 BANK_NAME = "RHB Bank Berhad"
 BANK_ACCOUNT_NUMBER = "21407100150515"
 BANK_SWIFT = "RHBBMYKLXXX"
-BANK_ADDRESS = "Two Tower Two & Three, RHB Centre, Jalan Tun Razak, 50400 Kuala Lumpur"
+BANK_ADDRESS = "Tower One & Tower Three, RHB Centre, Jalan Tun Razak, 50400 Kuala Lumpur"
 
 CURRENCY = "USD"
 
