@@ -17,7 +17,6 @@ import argparse
 import calendar
 import datetime
 import re
-from copy import deepcopy
 from pathlib import Path
 
 import docx
@@ -28,18 +27,15 @@ TEMPLATE_NAME = "Sample_Contractor_Invoice_Template (1) (3).docx"
 DOCX_RE = re.compile(r"^Invoicing - Lim Kok Leong - (?P<month>[A-Za-z]+) (?P<year>\d{4})\.docx$")
 XLSX_RE = re.compile(r"^Invoicing - Lim Kok Leong - (?P<month>[A-Za-z]+) (?P<year>\d{4})\.xlsx$")
 
-CONTRACTOR_NAME = "LIM Kok Leong"
+# Spelled as Wise holds it, which is the spelling the receiving bank matches against.
+CONTRACTOR_NAME = "Kok Leong Lim"
 CONTRACTOR_ADDRESS_LINE1 = "Unit C-19-07, Nidoz Residences"
 CONTRACTOR_ADDRESS_LINE2 = "No. 22A, Jln 2/125, 57100 Kuala Lumpur"
 CONTRACTOR_EMAIL = "william.lim@lifecheq.co.za"
 
-# Wise USD account, in use from the August 2026 invoice (LC006) onward. The
-# account holder name is spelled as Wise holds it, since that is the spelling the
-# receiving bank matches against.
-BANK_ACCOUNT_HOLDER = "Kok Leong Lim"
+# Wise USD account, in use from the August 2026 invoice (LC006) onward.
 BANK_NAME = "Wise (Wise US Inc)"
 BANK_ACCOUNT_NUMBER = "117452291368293"
-BANK_ROUTING_NUMBER = "084009519"  # ACH and domestic wires, via Column Bank
 BANK_SWIFT = "TRWIUS35XXX"
 BANK_ADDRESS = "Wise US Inc, 108 W 13th St, Wilmington, DE, 19801, United States"
 
@@ -137,17 +133,11 @@ def fill_template(template_path, out_path, invoice_number, invoice_date, due_dat
     set_run_text(totals.rows[2].cells[2].paragraphs[0], 0, fmt_amount(fee))  # Total due
 
     banking = d.tables[4]
-    # The template has no routing-number line, so clone the account-number row
-    # (keeping its formatting) and repurpose the copy.
-    banking.rows[2]._tr.addnext(deepcopy(banking.rows[2]._tr))
-
-    set_cell_text(banking.rows[0].cells[1], BANK_ACCOUNT_HOLDER)
+    set_cell_text(banking.rows[0].cells[1], CONTRACTOR_NAME)
     set_cell_text(banking.rows[1].cells[1], BANK_NAME)
     set_cell_text(banking.rows[2].cells[1], BANK_ACCOUNT_NUMBER)
-    set_cell_text(banking.rows[3].cells[0], "Routing Number (ACH/wire):")
-    set_cell_text(banking.rows[3].cells[1], BANK_ROUTING_NUMBER)
-    set_cell_text(banking.rows[4].cells[1], BANK_SWIFT)
-    set_cell_text(banking.rows[5].cells[1], BANK_ADDRESS)
+    set_cell_text(banking.rows[3].cells[1], BANK_SWIFT)
+    set_cell_text(banking.rows[4].cells[1], BANK_ADDRESS)
 
     notes_para = d.paragraphs[7]
     notes_para.runs[0].text = "Payment due by the due date specified above."
