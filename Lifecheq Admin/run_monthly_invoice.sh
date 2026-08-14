@@ -1,12 +1,20 @@
 #!/bin/bash
 # Monthly contractor invoice generation, run locally on William's Mac.
 #
-# Installed as a launchd job that fires on the 14th of each month. Everything
-# happens on this machine: the repo is refreshed, the invoice is generated into
-# "Lifecheq Admin", and nothing is pushed to GitHub. That keeps the automation
-# independent of any cloud credentials.
+# Run this by hand from Terminal on or after the 14th of each month, via the
+# "invoice" shell alias or:
 #
-# Log: ~/Library/Logs/invoice-generate.log
+#     bash "$HOME/Documents/GitHub/Default-Base-Repo/Lifecheq Admin/run_monthly_invoice.sh"
+#
+# It is deliberately NOT scheduled. macOS privacy protection (TCC) stops
+# background launchd jobs from reading ~/Documents, so a scheduled run dies with
+# "fatal: Unable to read current working directory: Operation not permitted"
+# while the identical command succeeds in Terminal, which carries the user's own
+# permission grant. Scheduling this would fail silently once a month, which is
+# worse than running it deliberately.
+#
+# Everything happens on this machine: the repo is refreshed, the invoice is
+# generated into "Lifecheq Admin", and nothing is pushed to GitHub.
 
 set -uo pipefail
 
