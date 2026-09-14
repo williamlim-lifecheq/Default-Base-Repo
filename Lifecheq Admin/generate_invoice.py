@@ -43,7 +43,7 @@ CURRENCY = "USD"
 
 # Standing monthly charges. Anything else (adjustments, reimbursements,
 # entertainment) is month-specific and added by hand after generating.
-BASE_FEE = 10000.00
+BASE_FEE = 10200.00
 BASE_DESCRIPTION = "Services rendered as Director, Business Development – Southeast Asia"
 ALLOWANCE = 200.00
 ALLOWANCE_DESCRIPTION = "Monthly fixed Cost-of-Work Allowance"
