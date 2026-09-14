@@ -41,6 +41,13 @@ BANK_ADDRESS = "Wise US Inc, 108 W 13th St, Wilmington, DE, 19801, United States
 
 CURRENCY = "USD"
 
+# Standing monthly charges. Anything else (adjustments, reimbursements,
+# entertainment) is month-specific and added by hand after generating.
+BASE_FEE = 10000.00
+BASE_DESCRIPTION = "Services rendered as Director, Business Development – Southeast Asia"
+ALLOWANCE = 200.00
+ALLOWANCE_DESCRIPTION = "Monthly fixed Cost-of-Work Allowance"
+
 
 def fmt_amount(amount):
     return f"{CURRENCY} {amount:,.2f}"
@@ -101,7 +108,8 @@ def replace_bracket(text, replacement):
     return re.sub(r"\[.*?\]", replacement, text, count=1)
 
 
-def fill_template(template_path, out_path, invoice_number, invoice_date, due_date, description, qty, fee):
+def fill_template(template_path, out_path, invoice_number, invoice_date, due_date, description, qty, fee,
+                  allowance, allowance_description):
     d = docx.Document(template_path)
 
     header_left, header_right = d.tables[0].rows[0].cells
@@ -122,15 +130,19 @@ def fill_template(template_path, out_path, invoice_number, invoice_date, due_dat
     set_run_text(services.rows[1].cells[0].paragraphs[0], 0, description)
     set_run_text(services.rows[1].cells[1].paragraphs[0], 0, str(qty))
     set_run_text(services.rows[1].cells[2].paragraphs[0], 0, fmt_amount(fee))
-    for row in services.rows[2:]:
+    set_run_text(services.rows[2].cells[0].paragraphs[0], 0, allowance_description)
+    set_run_text(services.rows[2].cells[1].paragraphs[0], 0, "1")
+    set_run_text(services.rows[2].cells[2].paragraphs[0], 0, fmt_amount(allowance))
+    for row in services.rows[3:]:
         set_run_text(row.cells[0].paragraphs[0], 0, "")
         set_run_text(row.cells[1].paragraphs[0], 0, "")
         set_run_text(row.cells[2].paragraphs[0], 0, "")
 
+    total = fee + allowance
     totals = d.tables[3]
-    set_run_text(totals.rows[0].cells[2].paragraphs[0], 0, fmt_amount(fee))  # Subtotal
-    set_run_text(totals.rows[1].cells[2].paragraphs[0], 0, "N/A")            # VAT (not applicable)
-    set_run_text(totals.rows[2].cells[2].paragraphs[0], 0, fmt_amount(fee))  # Total due
+    set_run_text(totals.rows[0].cells[2].paragraphs[0], 0, fmt_amount(total))  # Subtotal
+    set_run_text(totals.rows[1].cells[2].paragraphs[0], 0, "N/A")              # VAT (not applicable)
+    set_run_text(totals.rows[2].cells[2].paragraphs[0], 0, fmt_amount(total))  # Total due
 
     banking = d.tables[4]
     set_cell_text(banking.rows[0].cells[1], CONTRACTOR_NAME)
@@ -151,9 +163,13 @@ def main():
     parser.add_argument("--month", type=int, help="Target month (1-12). Default: month after the latest invoice on file")
     parser.add_argument("--year", type=int, help="Target year. Default: inferred alongside --month")
     parser.add_argument("--invoice-date-day", type=int, default=15, help="Day of month for the invoice date (default: 15)")
-    parser.add_argument("--fee", type=float, default=11000, help="Base Consultation Services fee (default: 11000)")
+    parser.add_argument("--fee", type=float, default=BASE_FEE, help=f"Base monthly fee (default: {BASE_FEE:,.0f})")
     parser.add_argument("--qty", default="1", help="Qty / Hrs value for the base fee line (default: 1)")
-    parser.add_argument("--description", default="Consultation Services", help="Description for the base fee line")
+    parser.add_argument("--description", default=BASE_DESCRIPTION, help="Description for the base fee line")
+    parser.add_argument("--allowance", type=float, default=ALLOWANCE,
+                        help=f"Fixed monthly allowance (default: {ALLOWANCE:,.0f}; pass 0 to omit the line)")
+    parser.add_argument("--allowance-description", default=ALLOWANCE_DESCRIPTION,
+                        help="Description for the allowance line")
     parser.add_argument("--invoice-number", help="Override the auto-incremented invoice number")
     parser.add_argument("--dry-run", action="store_true", help="Print what would be generated without writing a file")
     args = parser.parse_args()
@@ -194,12 +210,15 @@ def main():
     print(f"  Invoice date         : {invoice_date.strftime('%d/%m/%Y')}")
     print(f"  Due date             : {due_date.strftime('%d/%m/%Y')}")
     print(f"  Base fee             : {fmt_amount(args.fee)}")
+    print(f"  Allowance            : {fmt_amount(args.allowance)}")
+    print(f"  Total due            : {fmt_amount(args.fee + args.allowance)}")
 
     if args.dry_run:
         print("Dry run — no file written.")
         return
 
-    fill_template(template_path, new_path, new_number, invoice_date, due_date, args.description, args.qty, args.fee)
+    fill_template(template_path, new_path, new_number, invoice_date, due_date, args.description, args.qty, args.fee,
+                  args.allowance, args.allowance_description)
     print(f"Wrote {new_path}")
     print("Note: Subtotal/VAT/Total are plain text, not live formulas — if you add claim lines, "
           "update the Subtotal and Total Due amounts by hand before sending it to the accountant.")
